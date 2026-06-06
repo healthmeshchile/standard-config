@@ -46,14 +46,6 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: healthmesh/standard-config:${{env.ARTIFACT_VERSION}},bahmni/standard-config:latest
-      - name: Push Translations to Transifex
-        run: |
-          curl -o transifex.sh https://raw.githubusercontent.com/Bahmni/bahmni-infra-utils/main/transifex.sh
-          chmod +x transifex.sh
-          ./transifex.sh push
-          rm transifex.sh
-        env:
-          TX_TOKEN: ${{ secrets.TX_TOKEN }}
       - name: Update Version and Image Tag
         run: |
           yq --inplace '.image.tag = "${{ env.ARTIFACT_VERSION }}"' $HELM_CHART_PATH/values.yaml
