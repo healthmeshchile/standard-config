@@ -45,7 +45,7 @@ jobs:
           file: package/docker/Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: healthmesh/standard-config:${{env.ARTIFACT_VERSION}},bahmni/standard-config:latest
+          tags: healthmesh/standard-config:${{env.ARTIFACT_VERSION}},healthmesh/standard-config:latest
       - name: Update Version and Image Tag
         run: |
           yq --inplace '.image.tag = "${{ env.ARTIFACT_VERSION }}"' $HELM_CHART_PATH/values.yaml
