@@ -5,6 +5,12 @@ Uuid,Privilege name,Description
 ,Add Medications,Privilege to add medication records.
 ,Add Immunizations,Privilege to add immunization records.
 ,Add Vaccinations,Privilege to add vaccination records.
+,Add Diagnoses,Privilege to add diagnosis records.
+,Add Allergies,Privilege to add allergy records.
+,Add DocumentReference,Privilege to add document reference records.
+,Delete Patient Document,Privilege to delete patient documents.
+,Edit Conditions,Privilege to edit condition records.
+,Send Email,Privilege to send email.
 ,Get Allergies,Privilege to get allergy records.
 ,Get Forms,Privilege to get forms.
 ,Get Medications,Privilege to get medication records.
