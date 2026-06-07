@@ -36,5 +36,7 @@ Uuid,Void/Retire,Same as mappings,Fully specified name:en,Short name:en,Descript
 9bb0795c-4ff0-0305-1990-000000000043,,,Relevant clinical history,Relevant clinical history,,,,,Misc,Text,,,,,,,,,,,
 9bb0795c-4ff0-0305-1990-000000000044,,,Treatment provided,Treatment provided,,,,,Misc,Text,,,,,,,,,,,
 9bb0795c-4ff0-0305-1990-000000000045,,,Referred to Doctor,Referred to Doctor,,,,,Misc,Text,,,,,,,,,,,
+9bb0795c-4ff0-0305-1990-000000000046,,,Patient Instructions,Patient Instructions,,,,,Misc,Text,,,,,,,,,,,
+9bb0795c-4ff0-0305-1990-000000000047,,,Referral Entry,Referral Entry,,,,,Misc,N/A,,,9bb0795c-4ff0-0305-1990-000000000042;164359AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA;9bb0795c-4ff0-0305-1990-000000000043;9bb0795c-4ff0-0305-1990-000000000044,,,,,,,,
 631f9e92-b15f-41da-a6ba-4f4cd67f36b7,,,Blood Pressure,Blood Pressure,,,,,Misc,N/A,,,CIEL:5085;CIEL:5086;CIEL:159633;,,,,,,,,
 da47a35d-5806-48b7-b467-e29902759491,,,Chief Complaint Record,Chief Complaint Record,,,,,Misc,N/A,,,9bb0795c-4ff0-0305-1990-000000000002;CIEL:160531;CIEL:1731;9bb0795c-4ff0-0305-1990-000000000003;,,,,,,,,
