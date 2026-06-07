@@ -1,0 +1,12 @@
+Concept,Member,Member Type,Sort Weight,_version:1,_order:1000
+All Observation Templates,1114AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA,CONCEPT-SET,1,,
+All Observation Templates,Chief Complaint Record,CONCEPT-SET,2,,
+All Observation Templates,Patient Instructions,,3,,
+All Observation Templates,Referral Entry,CONCEPT-SET,4,,
+All Observation Templates,Consultation Images,CONCEPT-SET,5,,
+All Observation Templates,Consultation Videos,CONCEPT-SET,6,,
+All Other Drugs,163101AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA,,1,,
+BACTERIOLOGY CONCEPT SET,Bacteriology Results,CONCEPT-SET,1,,
+BACTERIOLOGY CONCEPT SET,Bacteriology Additional Attributes,CONCEPT-SET,2,,
+BACTERIOLOGY CONCEPT SET,Specimen Collection Date,,3,,
+BACTERIOLOGY CONCEPT SET,Specimen Id,,4,,
