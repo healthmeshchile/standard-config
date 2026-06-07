@@ -2,3 +2,21 @@ Uuid,Privilege name,Description
 ,app:atomfeed-console,Able to access atomfeed console.
 ,Send SMS,Privilege to send SMS
 ,app:clinical:addImmunizations,Privilege to add immunizations in clinical module.
+,Add Medications,Privilege to add medication records.
+,Add Immunizations,Privilege to add immunization records.
+,Add Vaccinations,Privilege to add vaccination records.
+,Get Allergies,Privilege to get allergy records.
+,Get Forms,Privilege to get forms.
+,Get Medications,Privilege to get medication records.
+,Get Patient Documents,Privilege to get patient documents.
+,Get Patient Program Attribute Types,Privilege to get patient program attribute types.
+,Get Programs,Privilege to get programs.
+,Get Vaccinations,Privilege to get vaccination records.
+,View Allergies,Privilege to view allergy records.
+,View Conditions,Privilege to view conditions.
+,View Diagnoses,Privilege to view diagnoses.
+,View Forms,Privilege to view forms.
+,View Medications,Privilege to view medication records.
+,View Patient Documents,Privilege to view patient documents.
+,View Programs,Privilege to view programs.
+,View Vaccinations,Privilege to view vaccination records.
