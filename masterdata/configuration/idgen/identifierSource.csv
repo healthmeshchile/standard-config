@@ -1,2 +1,5 @@
 Uuid,Void/Retire,Identifier type,Name,Description,Prefix,Suffix,First identifier base,Min length,Max length,Base character set,_version:1
-c5cf4b68-6529-43fc-a644-c775ae73745e,,Patient Identifier,ABC,ID sequence source for patients in ABC,ABC,,200000,4,,0123456789,
+c5cf4b68-6529-43fc-a644-c775ae73745e,,Patient Identifier,ABC,ID sequence source for patients in ABC,ABC*,,200000,4,,0123456789,
+8f8c6c5e-2e4b-4be5-9b72-73c65af79f01,,Patient Identifier,RUN,ID sequence source for Chilean RUN patient identifiers,RUN*,,200000,4,,0123456789K,
+203f8e87-84d1-4c98-9db4-b45d4ad7cd60,,Patient Identifier,NIP,ID sequence source for NIP patient identifiers,NIP*,,200000,4,,0123456789,
+bc4f77ef-2d8b-4a69-9477-efe3c40efa77,,Patient Identifier,Pasaporte,ID sequence source for passport patient identifiers,P*,,200000,4,,0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ,

@@ -53,7 +53,7 @@
   },
   "defaultVisitType": "OPD",
   "patientInformation": {
-    "defaultIdentifierPrefix": "ABC",
+    "defaultIdentifierPrefix": "RUN*",
     "patientNameDisplayOrder": ["firstName", "middleName", "lastName"],
     "showBirthTime": true,
     "showDOBEstimated": true,
