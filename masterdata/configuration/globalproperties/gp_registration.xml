@@ -1,6 +1,16 @@
 <config>
   <globalProperties>
     <globalProperty>
+      <property>locale.allowed.list</property>
+      <value>en,es</value>
+      <description>Locales available in the login language selector</description>
+    </globalProperty>
+    <globalProperty>
+      <property>default_locale</property>
+      <value>es</value>
+      <description>Default locale used before login</description>
+    </globalProperty>
+    <globalProperty>
       <property>emrapi.visitExpireHours</property>
       <value>0</value>
     </globalProperty>
