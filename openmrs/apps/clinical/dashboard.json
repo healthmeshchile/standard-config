@@ -324,24 +324,6 @@
                     "conceptNames":[],
                     "showDetailsButton":true
                 }
-            },
-            "Form 2 Obs To Obs": {
-                "displayType": "Half-Page",
-                "translationKey": "DASHBOARD_TITLE_FORMS2_OBS_TO_OBS_DISPLAY_CONTROL_KEY",
-                "type": "obsToObsFlowSheet",
-                "dashboardConfig": {
-                    "numberOfVisits": 1,
-                    "formNames": [],
-                    "groupByConcept": "",
-                    "isEditable": true,
-                    "conceptNames": []
-                },
-                "expandedViewConfig": {
-                    "formNames": [],
-                    "isEditable": true,
-                    "groupByConcept": "",
-                    "conceptNames": []
-                }
             }
         }
     },
