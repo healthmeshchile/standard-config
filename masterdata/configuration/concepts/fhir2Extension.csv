@@ -1,6 +1,6 @@
-Uuid,Void/Retire,Mappings|SAME-AS|SNOMED,Fully specified name:en,Short name:en,Description:en,Data class,Data type,Members,_version:1,_order:1400
-,,,Download URL,,,Misc,Text,,,
-,,,FHIR Export User Name,User Name,,Misc,N/A,,,
-,,,FHIR Export Start Date,Start Date,,Misc,Date,,,
-,,,FHIR Export End Date,End Date,,Misc,Date,,,
-,,,FHIR Export Anonymise Flag,Anonymise,,Misc,Boolean,,,
+Uuid,Void/Retire,Same as mappings,Fully specified name:en,Short name:en,Description:en,Fully specified name:es,Short name:es,Synonym 1:es,Description:es,Fully specified name:fr,Short name:fr,Description:fr,Data class,Data type,Complex data handler,Answers,Members,Allow decimals,Units,Normal low,Normal high,Absolute low,Absolute high,_version:1,_order:1400
+2f363f0d-271f-4ff9-a46d-d9a9eb458a78,,,Download URL,Download URL,FHIR export download URL,URL de descarga,URL de descarga,Download URL,URL de descarga para exportación FHIR,,,,Misc,Text,,,,,,,,,,,
+e0e5b94f-44a0-4551-82f1-09038ee567f4,,,FHIR Export User Name,User Name,FHIR export user name,Usuario de exportación FHIR,Usuario,FHIR Export User Name,Nombre de usuario para exportación FHIR,,,,Misc,N/A,,,,,,,,,,,
+3959779b-7a0f-4c01-8bc8-740e494f57b8,,,FHIR Export Start Date,Start Date,FHIR export start date,Fecha inicial de exportación FHIR,Fecha inicial,FHIR Export Start Date,Fecha inicial para exportación FHIR,,,,Misc,Date,,,,,,,,,,,
+8d26ea84-4afd-4757-942d-7597d44dc0e8,,,FHIR Export End Date,End Date,FHIR export end date,Fecha final de exportación FHIR,Fecha final,FHIR Export End Date,Fecha final para exportación FHIR,,,,Misc,Date,,,,,,,,,,,
+f8a775d2-39e4-4ac1-93f8-9f92a346cf0e,,,FHIR Export Anonymise Flag,Anonymise,FHIR export anonymise flag,Anonimizar exportación FHIR,Anonimizar,FHIR Export Anonymise Flag,Indicador para anonimizar exportación FHIR,,,,Misc,Boolean,,,,,,,,,,,
