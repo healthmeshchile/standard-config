@@ -490,6 +490,65 @@
         </sql>
     </changeSet>
 
+    <changeSet id="healthmesh-add-registration-concepts-spanish-names-20260607" author="HealthMesh" runAlways="true">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="concept_name"/>
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(*)
+                FROM concept_name
+                WHERE name = 'REGISTRATION_CONCEPTS'
+                  AND locale = 'en'
+                  AND concept_name_type = 'FULLY_SPECIFIED'
+                  AND voided = FALSE
+            </sqlCheck>
+        </preConditions>
+        <comment>Add Spanish names to existing REGISTRATION_CONCEPTS without recreating the concept</comment>
+        <sql>
+            SELECT concept_id INTO @registration_concepts_id
+            FROM concept_name
+            WHERE name = 'REGISTRATION_CONCEPTS'
+              AND locale = 'en'
+              AND concept_name_type = 'FULLY_SPECIFIED'
+              AND voided = FALSE
+            LIMIT 1;
+
+            INSERT INTO concept_name (concept_id, name, locale, locale_preferred, creator, date_created, concept_name_type, voided, uuid)
+            SELECT @registration_concepts_id, 'Conceptos de registro', 'es', TRUE, 1, NOW(), 'FULLY_SPECIFIED', FALSE, UUID()
+            WHERE NOT EXISTS (
+                SELECT 1
+                FROM concept_name
+                WHERE concept_id = @registration_concepts_id
+                  AND name = 'Conceptos de registro'
+                  AND locale = 'es'
+                  AND concept_name_type = 'FULLY_SPECIFIED'
+                  AND voided = FALSE
+            );
+
+            INSERT INTO concept_name (concept_id, name, locale, locale_preferred, creator, date_created, concept_name_type, voided, uuid)
+            SELECT @registration_concepts_id, 'Registro', 'es', FALSE, 1, NOW(), 'SHORT', FALSE, UUID()
+            WHERE NOT EXISTS (
+                SELECT 1
+                FROM concept_name
+                WHERE concept_id = @registration_concepts_id
+                  AND name = 'Registro'
+                  AND locale = 'es'
+                  AND concept_name_type = 'SHORT'
+                  AND voided = FALSE
+            );
+
+            INSERT INTO concept_name (concept_id, name, locale, locale_preferred, creator, date_created, concept_name_type, voided, uuid)
+            SELECT @registration_concepts_id, 'REGISTRATION_CONCEPTS', 'es', FALSE, 1, NOW(), NULL, FALSE, UUID()
+            WHERE NOT EXISTS (
+                SELECT 1
+                FROM concept_name
+                WHERE concept_id = @registration_concepts_id
+                  AND name = 'REGISTRATION_CONCEPTS'
+                  AND locale = 'es'
+                  AND voided = FALSE
+            );
+        </sql>
+    </changeSet>
+
     <include file="override_ciel_immunization_valueset.xml" relativeToChangelogFile="true"/>
     <include file="override_ciel_vaccination_site_valueset.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
