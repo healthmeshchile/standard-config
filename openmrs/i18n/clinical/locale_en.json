@@ -34,6 +34,11 @@
   "DASHBOARD_TITLE_PULSE": "Pulse",
   "DASHBOARD_TITLE_FORMS2_DISPLAY_CONTROL_KEY":"Forms-2",
   "DASHBOARD_TITLE_FORMS2_OBS_TO_OBS_DISPLAY_CONTROL_KEY":"Forms-2 ObsToObs",
+  "CONDITION_LIST_DISPLAY_CONTROL_TITLE": "Conditions",
+  "LAB_INVESTIGATION": "Lab Investigation",
+  "Observation Forms": "Observation Forms",
+  "Radiology Orders": "Radiology Orders",
+  "VISIT_TITLE_TREATMENTS_KEY": "Treatments",
 
   "DASHBOARD_TITLE_PATIENT_SUMMARY_KEY": "Patient Summary",
   "DASHBOARD_TITLE_ALLERGIES_KEY": "Allergies",
