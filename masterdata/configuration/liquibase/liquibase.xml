@@ -585,6 +585,68 @@
         </sql>
     </changeSet>
 
+    <changeSet id="healthmesh-repair-root-concept-sets-20260607" author="HealthMesh" runAlways="true">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="concept"/>
+            <tableExists tableName="concept_set"/>
+        </preConditions>
+        <comment>Ensure Bahmni root concepts are marked as sets and have their direct members</comment>
+        <sql>
+            UPDATE concept
+            SET is_set = 1
+            WHERE uuid IN (
+                'd6344fab-5e07-11ef-8f7c-0242ac120002',
+                'd4739519-5e07-11ef-8f7c-0242ac120002',
+                'fc25575c-5a8f-402a-a36e-9309d71083a5',
+                'cd5f6277-5e07-11ef-8f7c-0242ac120002',
+                'cd618631-5e07-11ef-8f7c-0242ac120002',
+                'cd615836-5e07-11ef-8f7c-0242ac120002',
+                '4be88f51-55df-4920-88a6-6c63bc4f3e21',
+                '8a30f06f-8d29-49b1-a6c1-52a60ed85b46',
+                '6a8bb973-e61e-4fbb-b7ca-94ebf163874e',
+                '9bb0795c-4ff0-0305-1990-000000000048'
+            )
+              AND retired = FALSE;
+
+            INSERT INTO concept_set (concept_set, concept_id, sort_weight, creator, date_created, uuid)
+            SELECT parent.concept_id, member.concept_id, relation.sort_weight, 1, NOW(), UUID()
+            FROM (
+                SELECT 'd6344fab-5e07-11ef-8f7c-0242ac120002' parent_uuid, '4be88f51-55df-4920-88a6-6c63bc4f3e21' member_uuid, 1 sort_weight
+                UNION ALL SELECT 'd6344fab-5e07-11ef-8f7c-0242ac120002', '9bb0795c-4ff0-0305-1990-000000000048', 2
+                UNION ALL SELECT 'd6344fab-5e07-11ef-8f7c-0242ac120002', '6a8bb973-e61e-4fbb-b7ca-94ebf163874e', 3
+                UNION ALL SELECT 'd4739519-5e07-11ef-8f7c-0242ac120002', '1114AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA', 1
+                UNION ALL SELECT 'd4739519-5e07-11ef-8f7c-0242ac120002', 'da47a35d-5806-48b7-b467-e29902759491', 2
+                UNION ALL SELECT 'd4739519-5e07-11ef-8f7c-0242ac120002', '9bb0795c-4ff0-0305-1990-000000000046', 3
+                UNION ALL SELECT 'd4739519-5e07-11ef-8f7c-0242ac120002', '9bb0795c-4ff0-0305-1990-000000000047', 4
+                UNION ALL SELECT 'd4739519-5e07-11ef-8f7c-0242ac120002', '9bb0795c-4ff0-0305-1990-000000000006', 5
+                UNION ALL SELECT 'd4739519-5e07-11ef-8f7c-0242ac120002', '9bb0795c-4ff0-0305-1990-000000000029', 6
+                UNION ALL SELECT 'fc25575c-5a8f-402a-a36e-9309d71083a5', '163101AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA', 1
+                UNION ALL SELECT 'cd5f6277-5e07-11ef-8f7c-0242ac120002', 'cd618631-5e07-11ef-8f7c-0242ac120002', 1
+                UNION ALL SELECT 'cd5f6277-5e07-11ef-8f7c-0242ac120002', 'cd615836-5e07-11ef-8f7c-0242ac120002', 2
+                UNION ALL SELECT 'cd5f6277-5e07-11ef-8f7c-0242ac120002', 'cd5fd30b-5e07-11ef-8f7c-0242ac120002', 3
+                UNION ALL SELECT 'cd5f6277-5e07-11ef-8f7c-0242ac120002', 'cd60e4d3-5e07-11ef-8f7c-0242ac120002', 4
+                UNION ALL SELECT 'cd5f6277-5e07-11ef-8f7c-0242ac120002', '89ca08db-f42c-4bc9-92ad-630970ab7d23', 5
+                UNION ALL SELECT 'cd615836-5e07-11ef-8f7c-0242ac120002', 'f93a878e-2165-4d8f-9bf0-8bcf98478460', 1
+                UNION ALL SELECT 'cd618631-5e07-11ef-8f7c-0242ac120002', 'd18150f7-c730-4d67-80f9-c8d0c42d1f1a', 1
+                UNION ALL SELECT 'cd618631-5e07-11ef-8f7c-0242ac120002', '0c767bbe-fbfc-4bb5-a9b7-34aa9f07a237', 2
+                UNION ALL SELECT '8a30f06f-8d29-49b1-a6c1-52a60ed85b46', '0001fdca-769d-47e4-8397-1c73c8bad34b', 1
+                UNION ALL SELECT '8a30f06f-8d29-49b1-a6c1-52a60ed85b46', '50975c1d-ae6a-4e8a-90cd-172a1e55156c', 2
+                UNION ALL SELECT '8a30f06f-8d29-49b1-a6c1-52a60ed85b46', '2c87f0c0-9b9b-4c8b-ae96-20e6361f21d5', 3
+                UNION ALL SELECT '8a30f06f-8d29-49b1-a6c1-52a60ed85b46', '5a950b75-e24c-438d-9e64-5795c6cb921b', 4
+                UNION ALL SELECT '8a30f06f-8d29-49b1-a6c1-52a60ed85b46', 'af18babe-99b0-44f4-ac7a-88b3d91a0c2a', 5
+                UNION ALL SELECT '8a30f06f-8d29-49b1-a6c1-52a60ed85b46', '3c3ba267-033d-4433-abd6-49adce15e315', 6
+            ) relation
+            JOIN concept parent ON parent.uuid = relation.parent_uuid AND parent.retired = FALSE
+            JOIN concept member ON member.uuid = relation.member_uuid AND member.retired = FALSE
+            WHERE NOT EXISTS (
+                SELECT 1
+                FROM concept_set existing_set
+                WHERE existing_set.concept_set = parent.concept_id
+                  AND existing_set.concept_id = member.concept_id
+            );
+        </sql>
+    </changeSet>
+
     <include file="override_ciel_immunization_valueset.xml" relativeToChangelogFile="true"/>
     <include file="override_ciel_vaccination_site_valueset.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

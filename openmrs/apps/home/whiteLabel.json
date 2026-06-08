@@ -1,7 +1,8 @@
 {
 	"homePage": {
-		"header_text": "<b>Bienvenido al<br />Registro Clínico y Sistema Hospitalario HealthMesh",
+		"header_text": "Bienvenido al<br />Registro Clínico y Sistema Hospitalario HealthMesh",
 		"logo": "/bahmni_config/openmrs/apps/home/logo.png",
+		"get_started_text": "COMENZAR",
 		"title_text": " "
 	},
 	"loginPage": {
