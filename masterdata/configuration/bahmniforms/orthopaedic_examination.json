@@ -12,13 +12,23 @@
         "uuid": "226ba2f3-9775-4392-84b2-75b8affe6c6a"
       },
       {
-        "value": "[{\"display\":\"Orthopaedic Examination\",\"locale\":\"en\"}]",
+        "value": "[{\"display\":\"Examen ortopédico\",\"locale\":\"es\"},{\"display\":\"Orthopaedic Examination\",\"locale\":\"en\"}]",
         "dataType": "org.bahmni.customdatatype.datatype.FormNameTranslationDatatype",
         "uuid": "385a7393-2242-4e58-b6fd-2cff1806dd46"
       }
     ]
   },
   "translations": [
+    {
+      "locale": "es",
+      "labels": {},
+      "concepts": {},
+      "formName": "Examen ortopédico",
+      "formUuid": null,
+      "version": "1",
+      "referenceVersion": null,
+      "referenceFormUuid": null
+    },
     {
       "locale": "en",
       "labels": {},

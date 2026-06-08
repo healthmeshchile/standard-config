@@ -11,13 +11,23 @@
         "uuid": "15731284-378a-4d66-a785-647b8dccce2e"
       },
       {
-        "value": "[{\"display\":\"Hypertension Intake\",\"locale\":\"en\"}]",
+        "value": "[{\"display\":\"Evaluación inicial de hipertensión\",\"locale\":\"es\"},{\"display\":\"Hypertension Intake\",\"locale\":\"en\"}]",
         "dataType": "org.bahmni.customdatatype.datatype.FormNameTranslationDatatype",
         "uuid": "7b6964dd-c657-437f-aa2d-bcca7b7f3529"
       }
     ]
   },
   "translations": [
+    {
+      "locale": "es",
+      "labels": {},
+      "concepts": {},
+      "formName": "Evaluación inicial de hipertensión",
+      "formUuid": null,
+      "version": "1",
+      "referenceVersion": null,
+      "referenceFormUuid": null
+    },
     {
       "locale": "en",
       "labels": {

@@ -12,13 +12,23 @@
         "uuid": "25c026e4-2676-4731-9a45-92a72e154fb6"
       },
       {
-        "value": "[{\"display\":\"Death Note\",\"locale\":\"en\"}]",
+        "value": "[{\"display\":\"Nota de defunción\",\"locale\":\"es\"},{\"display\":\"Death Note\",\"locale\":\"en\"}]",
         "dataType": "org.bahmni.customdatatype.datatype.FormNameTranslationDatatype",
         "uuid": "d7609e2a-f183-46d6-b3d1-ff484d47d891"
       }
     ]
   },
   "translations": [
+    {
+      "locale": "es",
+      "labels": {},
+      "concepts": {},
+      "formName": "Nota de defunción",
+      "formUuid": null,
+      "version": "1",
+      "referenceVersion": null,
+      "referenceFormUuid": null
+    },
     {
       "locale": "en",
       "labels": {},

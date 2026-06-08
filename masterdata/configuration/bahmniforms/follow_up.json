@@ -11,13 +11,23 @@
         "uuid": "469d89f7-be00-4fc1-8ad9-74638f959344"
       },
       {
-        "value": "[{\"display\":\"Follow Up\",\"locale\":\"en\"}]",
+        "value": "[{\"display\":\"Seguimiento\",\"locale\":\"es\"},{\"display\":\"Follow Up\",\"locale\":\"en\"}]",
         "dataType": "org.bahmni.customdatatype.datatype.FormNameTranslationDatatype",
         "uuid": "ce3bba8a-83a3-4021-acc1-c7d3e6313348"
       }
     ]
   },
   "translations": [
+    {
+      "locale": "es",
+      "labels": {},
+      "concepts": {},
+      "formName": "Seguimiento",
+      "formUuid": null,
+      "version": "1",
+      "referenceVersion": null,
+      "referenceFormUuid": null
+    },
     {
       "locale": "en",
       "labels": {},
