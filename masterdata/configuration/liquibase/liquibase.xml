@@ -209,6 +209,43 @@
             UPDATE concept set retired = TRUE where version is null and concept_id = @concept_id;
         </sql>
     </changeSet>
+    <changeSet id="healthmesh-retire-duplicate-emrapi-metadata-concepts-20260607" author="HealthMesh" runAlways="true">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="concept"/>
+            <tableExists tableName="concept_reference_map"/>
+            <tableExists tableName="concept_reference_term"/>
+            <tableExists tableName="concept_reference_source"/>
+        </preConditions>
+        <comment>Retire duplicate non-Bahmni EMR API metadata concepts when the Bahmni canonical concept exists</comment>
+        <sql>
+            UPDATE concept c
+            JOIN concept_reference_map rmap ON rmap.concept_id = c.concept_id
+            JOIN concept_reference_term rterm ON rterm.concept_reference_term_id = rmap.concept_reference_term_id
+            JOIN concept_reference_source rsource ON rsource.concept_source_id = rterm.concept_source_id
+            SET c.retired = TRUE,
+                c.retired_by = 1,
+                c.date_retired = NOW(),
+                c.retire_reason = 'Retired duplicate EMR API metadata concept; Bahmni canonical concept exists'
+            WHERE rsource.name = 'org.openmrs.module.emrapi'
+              AND rterm.code IN (
+                  'Diagnosis Concept Set',
+                  'Coded Diagnosis',
+                  'Non-Coded Diagnosis',
+                  'Diagnosis Certainty',
+                  'Diagnosis Order'
+              )
+              AND c.retired = FALSE
+              AND (c.version IS NULL OR c.version != 'BAHMNI-CORE-1.0')
+              AND EXISTS (
+                  SELECT 1
+                  FROM concept_reference_map bahmni_map
+                  JOIN concept bahmni_concept ON bahmni_concept.concept_id = bahmni_map.concept_id
+                  WHERE bahmni_map.concept_reference_term_id = rterm.concept_reference_term_id
+                    AND bahmni_concept.retired = FALSE
+                    AND bahmni_concept.version = 'BAHMNI-CORE-1.0'
+              );
+        </sql>
+    </changeSet>
     <changeSet id="BAH-2231-202209060305-01" author="Clinic-Config">
         <preConditions onFail="MARK_RAN">
             <sqlCheck expectedResult="1">
@@ -585,6 +622,43 @@
         </sql>
     </changeSet>
 
+    <changeSet id="healthmesh-add-existing-root-concept-spanish-names-20260607" author="HealthMesh" runAlways="true">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="concept"/>
+            <tableExists tableName="concept_name"/>
+        </preConditions>
+        <comment>Add Spanish names to root concepts that are provided by the base dictionary</comment>
+        <sql>
+            INSERT INTO concept_name (concept_id, name, locale, locale_preferred, creator, date_created, concept_name_type, voided, uuid)
+            SELECT c.concept_id, names.es_name, 'es', FALSE, 1, NOW(), names.concept_name_type, FALSE, UUID()
+            FROM concept c
+            JOIN concept_name en_name ON en_name.concept_id = c.concept_id
+            JOIN (
+                SELECT 'Lab Samples' AS lookup_name, 'Lab Samples' AS es_name, 'FULLY_SPECIFIED' AS concept_name_type
+                UNION ALL SELECT 'Lab Samples', 'Muestras de laboratorio', 'SHORT'
+                UNION ALL SELECT 'Lab Departments', 'Lab Departments', 'FULLY_SPECIFIED'
+                UNION ALL SELECT 'Lab Departments', 'Departamentos de laboratorio', 'SHORT'
+                UNION ALL SELECT 'Specimen Sample Source', 'Specimen Sample Source', 'FULLY_SPECIFIED'
+                UNION ALL SELECT 'Specimen Sample Source', 'Origen de muestra', 'SHORT'
+                UNION ALL SELECT 'Consultation Note', 'Consultation Note', 'FULLY_SPECIFIED'
+                UNION ALL SELECT 'Consultation Note', 'Nota de consulta', 'SHORT'
+            ) names ON names.lookup_name = en_name.name
+            WHERE c.retired = FALSE
+              AND en_name.locale = 'en'
+              AND en_name.concept_name_type = 'FULLY_SPECIFIED'
+              AND en_name.voided = FALSE
+              AND NOT EXISTS (
+                  SELECT 1
+                  FROM concept_name existing_name
+                  WHERE existing_name.concept_id = c.concept_id
+                    AND existing_name.name = names.es_name
+                    AND existing_name.locale = 'es'
+                    AND existing_name.concept_name_type = names.concept_name_type
+                    AND existing_name.voided = FALSE
+              );
+        </sql>
+    </changeSet>
+
     <changeSet id="healthmesh-repair-root-concept-sets-20260607" author="HealthMesh" runAlways="true">
         <preConditions onFail="MARK_RAN">
             <tableExists tableName="concept"/>
@@ -592,52 +666,85 @@
         </preConditions>
         <comment>Ensure Bahmni root concepts are marked as sets and have their direct members</comment>
         <sql>
-            UPDATE concept
-            SET is_set = 1
-            WHERE uuid IN (
-                'd6344fab-5e07-11ef-8f7c-0242ac120002',
-                'd4739519-5e07-11ef-8f7c-0242ac120002',
-                'fc25575c-5a8f-402a-a36e-9309d71083a5',
-                'cd5f6277-5e07-11ef-8f7c-0242ac120002',
-                'cd618631-5e07-11ef-8f7c-0242ac120002',
-                'cd615836-5e07-11ef-8f7c-0242ac120002',
-                '4be88f51-55df-4920-88a6-6c63bc4f3e21',
-                '8a30f06f-8d29-49b1-a6c1-52a60ed85b46',
-                '6a8bb973-e61e-4fbb-b7ca-94ebf163874e',
-                '9bb0795c-4ff0-0305-1990-000000000048'
-            )
-              AND retired = FALSE;
+            UPDATE concept c
+            SET c.is_set = 1
+            WHERE c.retired = FALSE
+              AND (
+                  c.uuid IN (
+                      'd6344fab-5e07-11ef-8f7c-0242ac120002',
+                      'd4739519-5e07-11ef-8f7c-0242ac120002',
+                      'fc25575c-5a8f-402a-a36e-9309d71083a5',
+                      'cd5f6277-5e07-11ef-8f7c-0242ac120002',
+                      'cd618631-5e07-11ef-8f7c-0242ac120002',
+                      'cd615836-5e07-11ef-8f7c-0242ac120002',
+                      '6a8bb973-e61e-4fbb-b7ca-94ebf163874e',
+                      '9bb0795c-4ff0-0305-1990-000000000048'
+                  )
+                  OR EXISTS (
+                      SELECT 1
+                      FROM concept_name cn
+                      WHERE cn.concept_id = c.concept_id
+                        AND cn.name IN ('Lab Samples', 'Lab Departments')
+                        AND cn.locale = 'en'
+                        AND cn.concept_name_type = 'FULLY_SPECIFIED'
+                        AND cn.voided = FALSE
+                  )
+              );
 
             INSERT INTO concept_set (concept_set, concept_id, sort_weight, creator, date_created, uuid)
             SELECT parent.concept_id, member.concept_id, relation.sort_weight, 1, NOW(), UUID()
             FROM (
-                SELECT 'd6344fab-5e07-11ef-8f7c-0242ac120002' parent_uuid, '4be88f51-55df-4920-88a6-6c63bc4f3e21' member_uuid, 1 sort_weight
-                UNION ALL SELECT 'd6344fab-5e07-11ef-8f7c-0242ac120002', '9bb0795c-4ff0-0305-1990-000000000048', 2
-                UNION ALL SELECT 'd6344fab-5e07-11ef-8f7c-0242ac120002', '6a8bb973-e61e-4fbb-b7ca-94ebf163874e', 3
-                UNION ALL SELECT 'd4739519-5e07-11ef-8f7c-0242ac120002', '1114AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA', 1
-                UNION ALL SELECT 'd4739519-5e07-11ef-8f7c-0242ac120002', 'da47a35d-5806-48b7-b467-e29902759491', 2
-                UNION ALL SELECT 'd4739519-5e07-11ef-8f7c-0242ac120002', '9bb0795c-4ff0-0305-1990-000000000046', 3
-                UNION ALL SELECT 'd4739519-5e07-11ef-8f7c-0242ac120002', '9bb0795c-4ff0-0305-1990-000000000047', 4
-                UNION ALL SELECT 'd4739519-5e07-11ef-8f7c-0242ac120002', '9bb0795c-4ff0-0305-1990-000000000006', 5
-                UNION ALL SELECT 'd4739519-5e07-11ef-8f7c-0242ac120002', '9bb0795c-4ff0-0305-1990-000000000029', 6
-                UNION ALL SELECT 'fc25575c-5a8f-402a-a36e-9309d71083a5', '163101AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA', 1
-                UNION ALL SELECT 'cd5f6277-5e07-11ef-8f7c-0242ac120002', 'cd618631-5e07-11ef-8f7c-0242ac120002', 1
-                UNION ALL SELECT 'cd5f6277-5e07-11ef-8f7c-0242ac120002', 'cd615836-5e07-11ef-8f7c-0242ac120002', 2
-                UNION ALL SELECT 'cd5f6277-5e07-11ef-8f7c-0242ac120002', 'cd5fd30b-5e07-11ef-8f7c-0242ac120002', 3
-                UNION ALL SELECT 'cd5f6277-5e07-11ef-8f7c-0242ac120002', 'cd60e4d3-5e07-11ef-8f7c-0242ac120002', 4
-                UNION ALL SELECT 'cd5f6277-5e07-11ef-8f7c-0242ac120002', '89ca08db-f42c-4bc9-92ad-630970ab7d23', 5
-                UNION ALL SELECT 'cd615836-5e07-11ef-8f7c-0242ac120002', 'f93a878e-2165-4d8f-9bf0-8bcf98478460', 1
-                UNION ALL SELECT 'cd618631-5e07-11ef-8f7c-0242ac120002', 'd18150f7-c730-4d67-80f9-c8d0c42d1f1a', 1
-                UNION ALL SELECT 'cd618631-5e07-11ef-8f7c-0242ac120002', '0c767bbe-fbfc-4bb5-a9b7-34aa9f07a237', 2
-                UNION ALL SELECT '8a30f06f-8d29-49b1-a6c1-52a60ed85b46', '0001fdca-769d-47e4-8397-1c73c8bad34b', 1
-                UNION ALL SELECT '8a30f06f-8d29-49b1-a6c1-52a60ed85b46', '50975c1d-ae6a-4e8a-90cd-172a1e55156c', 2
-                UNION ALL SELECT '8a30f06f-8d29-49b1-a6c1-52a60ed85b46', '2c87f0c0-9b9b-4c8b-ae96-20e6361f21d5', 3
-                UNION ALL SELECT '8a30f06f-8d29-49b1-a6c1-52a60ed85b46', '5a950b75-e24c-438d-9e64-5795c6cb921b', 4
-                UNION ALL SELECT '8a30f06f-8d29-49b1-a6c1-52a60ed85b46', 'af18babe-99b0-44f4-ac7a-88b3d91a0c2a', 5
-                UNION ALL SELECT '8a30f06f-8d29-49b1-a6c1-52a60ed85b46', '3c3ba267-033d-4433-abd6-49adce15e315', 6
+                SELECT 'd6344fab-5e07-11ef-8f7c-0242ac120002' parent_uuid, NULL parent_name, NULL member_uuid, 'Lab Samples' member_name, 1 sort_weight
+                UNION ALL SELECT 'd6344fab-5e07-11ef-8f7c-0242ac120002', NULL, '9bb0795c-4ff0-0305-1990-000000000048', NULL, 2
+                UNION ALL SELECT 'd6344fab-5e07-11ef-8f7c-0242ac120002', NULL, '6a8bb973-e61e-4fbb-b7ca-94ebf163874e', NULL, 3
+                UNION ALL SELECT 'd4739519-5e07-11ef-8f7c-0242ac120002', NULL, '1114AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA', NULL, 1
+                UNION ALL SELECT 'd4739519-5e07-11ef-8f7c-0242ac120002', NULL, 'da47a35d-5806-48b7-b467-e29902759491', NULL, 2
+                UNION ALL SELECT 'd4739519-5e07-11ef-8f7c-0242ac120002', NULL, '9bb0795c-4ff0-0305-1990-000000000046', NULL, 3
+                UNION ALL SELECT 'd4739519-5e07-11ef-8f7c-0242ac120002', NULL, '9bb0795c-4ff0-0305-1990-000000000047', NULL, 4
+                UNION ALL SELECT 'd4739519-5e07-11ef-8f7c-0242ac120002', NULL, '9bb0795c-4ff0-0305-1990-000000000006', NULL, 5
+                UNION ALL SELECT 'd4739519-5e07-11ef-8f7c-0242ac120002', NULL, '9bb0795c-4ff0-0305-1990-000000000029', NULL, 6
+                UNION ALL SELECT 'fc25575c-5a8f-402a-a36e-9309d71083a5', NULL, '163101AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA', NULL, 1
+                UNION ALL SELECT 'cd5f6277-5e07-11ef-8f7c-0242ac120002', NULL, 'cd618631-5e07-11ef-8f7c-0242ac120002', NULL, 1
+                UNION ALL SELECT 'cd5f6277-5e07-11ef-8f7c-0242ac120002', NULL, 'cd615836-5e07-11ef-8f7c-0242ac120002', NULL, 2
+                UNION ALL SELECT 'cd5f6277-5e07-11ef-8f7c-0242ac120002', NULL, 'cd5fd30b-5e07-11ef-8f7c-0242ac120002', NULL, 3
+                UNION ALL SELECT 'cd5f6277-5e07-11ef-8f7c-0242ac120002', NULL, 'cd60e4d3-5e07-11ef-8f7c-0242ac120002', NULL, 4
+                UNION ALL SELECT 'cd5f6277-5e07-11ef-8f7c-0242ac120002', NULL, NULL, 'Specimen Sample Source', 5
+                UNION ALL SELECT 'cd615836-5e07-11ef-8f7c-0242ac120002', NULL, NULL, 'Consultation Note', 1
+                UNION ALL SELECT 'cd618631-5e07-11ef-8f7c-0242ac120002', NULL, 'd18150f7-c730-4d67-80f9-c8d0c42d1f1a', NULL, 1
+                UNION ALL SELECT 'cd618631-5e07-11ef-8f7c-0242ac120002', NULL, '0c767bbe-fbfc-4bb5-a9b7-34aa9f07a237', NULL, 2
+                UNION ALL SELECT NULL, 'Lab Departments', '0001fdca-769d-47e4-8397-1c73c8bad34b', NULL, 1
+                UNION ALL SELECT NULL, 'Lab Departments', '50975c1d-ae6a-4e8a-90cd-172a1e55156c', NULL, 2
+                UNION ALL SELECT NULL, 'Lab Departments', '2c87f0c0-9b9b-4c8b-ae96-20e6361f21d5', NULL, 3
+                UNION ALL SELECT NULL, 'Lab Departments', '5a950b75-e24c-438d-9e64-5795c6cb921b', NULL, 4
+                UNION ALL SELECT NULL, 'Lab Departments', 'af18babe-99b0-44f4-ac7a-88b3d91a0c2a', NULL, 5
+                UNION ALL SELECT NULL, 'Lab Departments', '3c3ba267-033d-4433-abd6-49adce15e315', NULL, 6
             ) relation
-            JOIN concept parent ON parent.uuid = relation.parent_uuid AND parent.retired = FALSE
-            JOIN concept member ON member.uuid = relation.member_uuid AND member.retired = FALSE
+            JOIN concept parent ON parent.retired = FALSE
+                AND (
+                    (relation.parent_uuid IS NOT NULL AND parent.uuid = relation.parent_uuid)
+                    OR (relation.parent_name IS NOT NULL AND EXISTS (
+                        SELECT 1
+                        FROM concept_name parent_name
+                        WHERE parent_name.concept_id = parent.concept_id
+                          AND parent_name.name = relation.parent_name
+                          AND parent_name.locale = 'en'
+                          AND parent_name.concept_name_type = 'FULLY_SPECIFIED'
+                          AND parent_name.voided = FALSE
+                    ))
+                )
+            JOIN concept member ON member.retired = FALSE
+                AND (
+                    (relation.member_uuid IS NOT NULL AND member.uuid = relation.member_uuid)
+                    OR (relation.member_name IS NOT NULL AND EXISTS (
+                        SELECT 1
+                        FROM concept_name member_name
+                        WHERE member_name.concept_id = member.concept_id
+                          AND member_name.name = relation.member_name
+                          AND member_name.locale = 'en'
+                          AND member_name.concept_name_type = 'FULLY_SPECIFIED'
+                          AND member_name.voided = FALSE
+                    ))
+                )
             WHERE NOT EXISTS (
                 SELECT 1
                 FROM concept_set existing_set
