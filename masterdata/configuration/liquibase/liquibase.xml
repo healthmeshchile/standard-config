@@ -218,14 +218,16 @@
         </preConditions>
         <comment>Retire duplicate non-Bahmni EMR API metadata concepts when the Bahmni canonical concept exists</comment>
         <sql>
-            UPDATE concept c
+            DROP TEMPORARY TABLE IF EXISTS healthmesh_duplicate_emrapi_concepts;
+
+            CREATE TEMPORARY TABLE healthmesh_duplicate_emrapi_concepts AS
+            SELECT DISTINCT c.concept_id
+            FROM concept c
             JOIN concept_reference_map rmap ON rmap.concept_id = c.concept_id
             JOIN concept_reference_term rterm ON rterm.concept_reference_term_id = rmap.concept_reference_term_id
             JOIN concept_reference_source rsource ON rsource.concept_source_id = rterm.concept_source_id
-            SET c.retired = TRUE,
-                c.retired_by = 1,
-                c.date_retired = NOW(),
-                c.retire_reason = 'Retired duplicate EMR API metadata concept; Bahmni canonical concept exists'
+            JOIN concept_reference_map bahmni_map ON bahmni_map.concept_reference_term_id = rterm.concept_reference_term_id
+            JOIN concept bahmni_concept ON bahmni_concept.concept_id = bahmni_map.concept_id
             WHERE rsource.name = 'org.openmrs.module.emrapi'
               AND rterm.code IN (
                   'Diagnosis Concept Set',
@@ -236,14 +238,17 @@
               )
               AND c.retired = FALSE
               AND (c.version IS NULL OR c.version != 'BAHMNI-CORE-1.0')
-              AND EXISTS (
-                  SELECT 1
-                  FROM concept_reference_map bahmni_map
-                  JOIN concept bahmni_concept ON bahmni_concept.concept_id = bahmni_map.concept_id
-                  WHERE bahmni_map.concept_reference_term_id = rterm.concept_reference_term_id
-                    AND bahmni_concept.retired = FALSE
-                    AND bahmni_concept.version = 'BAHMNI-CORE-1.0'
-              );
+              AND bahmni_concept.retired = FALSE
+              AND bahmni_concept.version = 'BAHMNI-CORE-1.0';
+
+            UPDATE concept c
+            JOIN healthmesh_duplicate_emrapi_concepts duplicate_concepts ON duplicate_concepts.concept_id = c.concept_id
+            SET c.retired = TRUE,
+                c.retired_by = 1,
+                c.date_retired = NOW(),
+                c.retire_reason = 'Retired duplicate EMR API metadata concept; Bahmni canonical concept exists';
+
+            DROP TEMPORARY TABLE IF EXISTS healthmesh_duplicate_emrapi_concepts;
         </sql>
     </changeSet>
     <changeSet id="BAH-2231-202209060305-01" author="Clinic-Config">
