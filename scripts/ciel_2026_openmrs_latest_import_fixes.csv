@@ -1,0 +1,15 @@
+﻿CIEL ID,Reason,Action,Spanish name,OpenMRS name UUID
+1458,multiple_preferred_in_import_log,demoted_previous_preferred,Medición de glucosa en suero,51752d18-1720-4dc5-9e55-bc75419a63f1
+1458,multiple_preferred_in_import_log,promoted_spanish_fsn,Glucosa en suero (mmol),6c7e3699-65f4-403a-a3a7-309eb83c9bdc
+83517,duplicate_name_same_concept_locale,removed_obsolete_duplicate,Rosa de bengala,5b927165-186d-413a-b223-cf9332777370
+166353,duplicate_name_same_concept_locale,removed_obsolete_duplicate,Órgano genital femenino,2d2bc072-e3c6-4be7-bb60-5501ec497e30
+166349,duplicate_name_same_concept_locale,removed_obsolete_duplicate,Nervio periférico del miembro superior,9f8fa454-2265-457b-9c6e-c02adf4522a9
+166332,duplicate_name_same_concept_locale,removed_obsolete_duplicate,Nervio plantar medial,b3e67e0a-f331-4146-8e27-d154360a46d7
+166331,duplicate_name_same_concept_locale,removed_obsolete_duplicate,Nervio mediano,d130f607-0564-44fb-ac49-0fe3ea1b6f17
+166281,duplicate_name_same_concept_locale,removed_obsolete_duplicate,Párpado superior,35e9a32a-e2c6-4d21-9d23-b9df013b57c0
+166273,duplicate_name_same_concept_locale,removed_obsolete_duplicate,Cuerpo uterino,dbd58f82-b00a-4f26-928c-8762196236cf
+166271,duplicate_name_same_concept_locale,removed_obsolete_duplicate,Istmo del útero,e2a37029-d54e-4aaf-a74b-d335c49e044b
+121492,duplicate_name_same_concept_locale,removed_obsolete_duplicate,displasia arteriohepática,f59d6b0c-b363-428e-986d-46e8c6870298
+118492,duplicate_name_same_concept_locale,removed_obsolete_duplicate,exantema súbito,7b477e1d-bfdd-4e65-af3a-783ffcd2d556
+117045,duplicate_name_same_concept_locale,removed_obsolete_duplicate,artritis infecciosa,25ee3fb9-651a-4f92-b0db-cd4635c656c2
+115427,duplicate_name_same_concept_locale,removed_obsolete_duplicate,miocarditis infecciosa,af289d07-55c5-4ec5-8993-1965d8f42685
