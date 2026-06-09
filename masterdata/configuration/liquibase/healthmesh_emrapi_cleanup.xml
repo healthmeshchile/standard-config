@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+                  http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+<changeSet id="healthmesh-retire-non-canonical-emrapi-diagnosis-metadata-20260609" author="HealthMesh" runAlways="true">
+        <comment>Retire duplicate non-Bahmni EMR API diagnosis metadata concepts when Bahmni canonical concepts exist</comment>
+        <sql><![CDATA[
+            UPDATE concept c
+            JOIN concept_reference_map rmap ON rmap.concept_id = c.concept_id
+            JOIN concept_reference_term rterm ON rterm.concept_reference_term_id = rmap.concept_reference_term_id
+            JOIN concept_reference_source rsource ON rsource.concept_source_id = rterm.concept_source_id
+            JOIN concept_reference_map canonical_map ON canonical_map.concept_reference_term_id = rterm.concept_reference_term_id
+            JOIN concept canonical_concept ON canonical_concept.concept_id = canonical_map.concept_id
+                AND canonical_concept.retired = FALSE
+                AND canonical_concept.version = 'BAHMNI-CORE-1.0'
+            SET c.retired = TRUE,
+                c.retired_by = 1,
+                c.date_retired = NOW(),
+                c.retire_reason = 'Retired duplicate EMR API metadata concept; Bahmni canonical concept exists'
+            WHERE rsource.name = 'org.openmrs.module.emrapi'
+              AND rterm.code IN (
+                  'Diagnosis Concept Set',
+                  'Coded Diagnosis',
+                  'Non-Coded Diagnosis',
+                  'Diagnosis Certainty',
+                  'Diagnosis Order'
+              )
+              AND c.retired = FALSE
+              AND c.concept_id <> canonical_concept.concept_id
+              AND (c.version IS NULL OR c.version <> 'BAHMNI-CORE-1.0');
+        ]]></sql>
+    </changeSet>
+</databaseChangeLog>

@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+                  http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+<changeSet id="healthmesh-add-registration-concepts-spanish-names-20260609" author="HealthMesh" runAlways="true">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1"><![CDATA[
+                SELECT COUNT(*)
+                FROM concept_name
+                WHERE name = 'REGISTRATION_CONCEPTS'
+                  AND locale = 'en'
+                  AND concept_name_type = 'FULLY_SPECIFIED'
+                  AND voided = FALSE
+            ]]></sqlCheck>
+        </preConditions>
+        <comment>Add Spanish names to existing REGISTRATION_CONCEPTS without recreating the concept</comment>
+        <sql><![CDATA[
+            SELECT concept_id INTO @registration_concepts_id
+            FROM concept_name
+            WHERE name = 'REGISTRATION_CONCEPTS'
+              AND locale = 'en'
+              AND concept_name_type = 'FULLY_SPECIFIED'
+              AND voided = FALSE
+            LIMIT 1;
+
+            UPDATE concept_name
+            SET locale_preferred = FALSE
+            WHERE concept_id = @registration_concepts_id
+              AND locale = 'es'
+              AND voided = FALSE
+              AND locale_preferred = TRUE;
+
+            INSERT INTO concept_name (concept_id, name, locale, locale_preferred, creator, date_created, concept_name_type, voided, uuid)
+            SELECT @registration_concepts_id, 'Conceptos de registro', 'es', TRUE, 1, NOW(), 'FULLY_SPECIFIED', FALSE, UUID()
+            WHERE NOT EXISTS (
+                SELECT 1
+                FROM concept_name
+                WHERE concept_id = @registration_concepts_id
+                  AND name = 'Conceptos de registro'
+                  AND locale = 'es'
+                  AND concept_name_type = 'FULLY_SPECIFIED'
+                  AND voided = FALSE
+            );
+
+            UPDATE concept_name
+            SET locale_preferred = TRUE
+            WHERE concept_id = @registration_concepts_id
+              AND name = 'Conceptos de registro'
+              AND locale = 'es'
+              AND concept_name_type = 'FULLY_SPECIFIED'
+              AND voided = FALSE;
+
+            INSERT INTO concept_name (concept_id, name, locale, locale_preferred, creator, date_created, concept_name_type, voided, uuid)
+            SELECT @registration_concepts_id, 'Registro', 'es', FALSE, 1, NOW(), 'SHORT', FALSE, UUID()
+            WHERE NOT EXISTS (
+                SELECT 1
+                FROM concept_name
+                WHERE concept_id = @registration_concepts_id
+                  AND name = 'Registro'
+                  AND locale = 'es'
+                  AND concept_name_type = 'SHORT'
+                  AND voided = FALSE
+            );
+
+            INSERT INTO concept_name (concept_id, name, locale, locale_preferred, creator, date_created, concept_name_type, voided, uuid)
+            SELECT @registration_concepts_id, 'REGISTRATION_CONCEPTS', 'es', FALSE, 1, NOW(), NULL, FALSE, UUID()
+            WHERE NOT EXISTS (
+                SELECT 1
+                FROM concept_name
+                WHERE concept_id = @registration_concepts_id
+                  AND name = 'REGISTRATION_CONCEPTS'
+                  AND locale = 'es'
+                  AND voided = FALSE
+            );
+        ]]></sql>
+    </changeSet>
+
+    <changeSet id="healthmesh-add-observation-template-member-spanish-names-20260609" author="HealthMesh" runAlways="true">
+        <comment>Add Spanish names for observation template members used by Bahmni dashboards</comment>
+        <sql><![CDATA[
+            INSERT INTO concept_name (concept_id, name, locale, locale_preferred, creator, date_created, concept_name_type, voided, uuid)
+            SELECT c.concept_id, names.name, 'es', FALSE, 1, NOW(), names.concept_name_type, FALSE, UUID()
+            FROM concept c
+            JOIN (
+                SELECT '1114AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' AS concept_uuid, 'Vital signs' AS name, 'FULLY_SPECIFIED' AS concept_name_type
+                UNION ALL SELECT '1114AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA', 'Signos vitales', 'SHORT'
+                UNION ALL SELECT 'da47a35d-5806-48b7-b467-e29902759491', 'Chief Complaint Record', 'FULLY_SPECIFIED'
+                UNION ALL SELECT 'da47a35d-5806-48b7-b467-e29902759491', 'Motivo de consulta', 'SHORT'
+                UNION ALL SELECT '9bb0795c-4ff0-0305-1990-000000000046', 'Patient Instructions', 'FULLY_SPECIFIED'
+                UNION ALL SELECT '9bb0795c-4ff0-0305-1990-000000000046', 'Indicaciones para el paciente', 'SHORT'
+                UNION ALL SELECT '9bb0795c-4ff0-0305-1990-000000000047', 'Referral Entry', 'FULLY_SPECIFIED'
+                UNION ALL SELECT '9bb0795c-4ff0-0305-1990-000000000047', 'Derivación', 'SHORT'
+                UNION ALL SELECT '9bb0795c-4ff0-0305-1990-000000000006', 'Consultation Images', 'FULLY_SPECIFIED'
+                UNION ALL SELECT '9bb0795c-4ff0-0305-1990-000000000006', 'Imágenes de consulta', 'SHORT'
+                UNION ALL SELECT '9bb0795c-4ff0-0305-1990-000000000029', 'Consultation Videos', 'FULLY_SPECIFIED'
+                UNION ALL SELECT '9bb0795c-4ff0-0305-1990-000000000029', 'Videos de consulta', 'SHORT'
+            ) names ON names.concept_uuid = c.uuid
+            WHERE c.retired = FALSE
+              AND NOT EXISTS (
+                  SELECT 1
+                  FROM concept_name existing_name
+                  WHERE existing_name.concept_id = c.concept_id
+                    AND existing_name.name = names.name
+                    AND existing_name.locale = 'es'
+                    AND (
+                        existing_name.concept_name_type = names.concept_name_type
+                        OR (existing_name.concept_name_type IS NULL AND names.concept_name_type IS NULL)
+                    )
+                    AND existing_name.voided = FALSE
+              );
+        ]]></sql>
+    </changeSet>
+
+    <changeSet id="healthmesh-add-existing-root-concept-spanish-names-20260609" author="HealthMesh" runAlways="true">
+        <comment>Add Spanish names to root concepts that are provided by the base dictionary</comment>
+        <sql><![CDATA[
+            INSERT INTO concept_name (concept_id, name, locale, locale_preferred, creator, date_created, concept_name_type, voided, uuid)
+            SELECT c.concept_id, names.es_name, 'es', FALSE, 1, NOW(), names.concept_name_type, FALSE, UUID()
+            FROM concept c
+            JOIN concept_name en_name ON en_name.concept_id = c.concept_id
+            JOIN (
+                SELECT 'Lab Samples' AS lookup_name, 'Lab Samples' AS es_name, 'FULLY_SPECIFIED' AS concept_name_type
+                UNION ALL SELECT 'Lab Samples', 'Muestras de laboratorio', 'SHORT'
+                UNION ALL SELECT 'Lab Departments', 'Lab Departments', 'FULLY_SPECIFIED'
+                UNION ALL SELECT 'Lab Departments', 'Departamentos de laboratorio', 'SHORT'
+                UNION ALL SELECT 'Specimen Sample Source', 'Specimen Sample Source', 'FULLY_SPECIFIED'
+                UNION ALL SELECT 'Specimen Sample Source', 'Origen de muestra', 'SHORT'
+                UNION ALL SELECT 'Consultation Note', 'Consultation Note', 'FULLY_SPECIFIED'
+                UNION ALL SELECT 'Consultation Note', 'Nota de consulta', 'SHORT'
+            ) names ON names.lookup_name = en_name.name
+            WHERE c.retired = FALSE
+              AND en_name.locale = 'en'
+              AND en_name.concept_name_type = 'FULLY_SPECIFIED'
+              AND en_name.voided = FALSE
+              AND NOT EXISTS (
+                  SELECT 1
+                  FROM concept_name existing_name
+                  WHERE existing_name.concept_id = c.concept_id
+                    AND existing_name.name = names.es_name
+                    AND existing_name.locale = 'es'
+                    AND (
+                        existing_name.concept_name_type = names.concept_name_type
+                        OR (existing_name.concept_name_type IS NULL AND names.concept_name_type IS NULL)
+                    )
+                    AND existing_name.voided = FALSE
+              );
+        ]]></sql>
+    </changeSet>
+</databaseChangeLog>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+                  http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+<changeSet id="healthmesh-insert-fhir-concept-source-hl7-cvx-20260609" author="HealthMesh" runAlways="true">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1"><![CDATA[
+                SELECT COUNT(*) FROM information_schema.tables
+                WHERE table_schema = DATABASE()
+                  AND table_name = 'fhir_concept_source'
+            ]]></sqlCheck>
+            <sqlCheck expectedResult="1"><![CDATA[
+                SELECT COUNT(*) FROM concept_reference_source WHERE name = 'HL-7-CVX'
+            ]]></sqlCheck>
+            <sqlCheck expectedResult="0"><![CDATA[
+                SELECT COUNT(*) FROM fhir_concept_source WHERE url = 'http://hl7.org/fhir/sid/cvx'
+            ]]></sqlCheck>
+        </preConditions>
+        <comment>Add FHIR concept source URL mapping for HL-7-CVX</comment>
+        <sql><![CDATA[
+            INSERT INTO fhir_concept_source (
+                concept_source_id,
+                url,
+                name,
+                creator,
+                date_created,
+                uuid
+            )
+            SELECT
+                concept_source_id,
+                'http://hl7.org/fhir/sid/cvx',
+                'HL-7-CVX',
+                1,
+                NOW(),
+                UUID()
+            FROM concept_reference_source
+            WHERE name = 'HL-7-CVX'
+              AND NOT EXISTS (
+                  SELECT 1
+                  FROM fhir_concept_source
+                  WHERE url = 'http://hl7.org/fhir/sid/cvx'
+              );
+        ]]></sql>
+    </changeSet>
+</databaseChangeLog>

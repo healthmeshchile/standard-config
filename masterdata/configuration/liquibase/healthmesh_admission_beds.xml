@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+                  http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+<changeSet id="healthmesh-add-two-beds-per-admission-room-20260609" author="HealthMesh" runAlways="true">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1"><![CDATA[
+                SELECT COUNT(*) FROM information_schema.tables
+                WHERE table_schema = DATABASE()
+                  AND table_name = 'bed'
+            ]]></sqlCheck>
+            <sqlCheck expectedResult="1"><![CDATA[
+                SELECT COUNT(*) FROM information_schema.tables
+                WHERE table_schema = DATABASE()
+                  AND table_name = 'bed_location_map'
+            ]]></sqlCheck>
+        </preConditions>
+        <comment>Add two beds to every physical room under an admission location</comment>
+        <sql><![CDATA[
+            INSERT INTO bed (bed_number, status, bed_type_id, uuid, creator, date_created, voided)
+            SELECT
+                CONCAT(
+                    CASE room.uuid
+                        WHEN '9212680d-bb7c-412a-bd07-d24358f5a4ad' THEN 'URG'
+                        WHEN '046a84ac-cd6a-4725-b712-24cb115d1c55' THEN 'GEN-H1'
+                        WHEN '6f9ad5d9-bcfe-45fb-82b1-c48bf6ae051f' THEN 'GEN-H2'
+                        WHEN 'df352801-7c6c-4dd5-bbef-0c01a216d453' THEN 'PED-H1'
+                        ELSE CONCAT('SALA-', LEFT(room.uuid, 8))
+                    END,
+                    '-',
+                    slot.suffix
+                ) AS bed_number,
+                'AVAILABLE' AS status,
+                NULL AS bed_type_id,
+                UUID() AS uuid,
+                1 AS creator,
+                NOW() AS date_created,
+                FALSE AS voided
+            FROM location room
+            JOIN location ward ON ward.location_id = room.parent_location AND ward.retired = FALSE
+            JOIN location_tag_map room_tag_map ON room_tag_map.location_id = room.location_id
+            JOIN location_tag room_tag ON room_tag.location_tag_id = room_tag_map.location_tag_id
+                AND room_tag.name = 'Admission Location'
+            JOIN location_tag_map ward_tag_map ON ward_tag_map.location_id = ward.location_id
+            JOIN location_tag ward_tag ON ward_tag.location_tag_id = ward_tag_map.location_tag_id
+                AND ward_tag.name = 'Admission Location'
+            JOIN (
+                SELECT '01' AS suffix, 1 AS bed_row_number, 1 AS bed_column_number
+                UNION ALL
+                SELECT '02' AS suffix, 1 AS bed_row_number, 2 AS bed_column_number
+            ) slot ON 1 = 1
+            WHERE room.retired = FALSE
+              AND NOT EXISTS (
+                  SELECT 1
+                  FROM bed_location_map occupied_position
+                  WHERE occupied_position.location_id = room.location_id
+                    AND occupied_position.bed_row_number = slot.bed_row_number
+                    AND occupied_position.bed_column_number = slot.bed_column_number
+                    AND occupied_position.bed_id IS NOT NULL
+              )
+              AND NOT EXISTS (
+                  SELECT 1
+                  FROM bed existing_bed
+                  WHERE existing_bed.bed_number = CONCAT(
+                      CASE room.uuid
+                          WHEN '9212680d-bb7c-412a-bd07-d24358f5a4ad' THEN 'URG'
+                          WHEN '046a84ac-cd6a-4725-b712-24cb115d1c55' THEN 'GEN-H1'
+                          WHEN '6f9ad5d9-bcfe-45fb-82b1-c48bf6ae051f' THEN 'GEN-H2'
+                          WHEN 'df352801-7c6c-4dd5-bbef-0c01a216d453' THEN 'PED-H1'
+                          ELSE CONCAT('SALA-', LEFT(room.uuid, 8))
+                      END,
+                      '-',
+                      slot.suffix
+                  )
+                    AND existing_bed.voided = FALSE
+              );
+
+            INSERT INTO bed_location_map (location_id, bed_row_number, bed_column_number, bed_id)
+            SELECT
+                room.location_id,
+                slot.bed_row_number,
+                slot.bed_column_number,
+                bed.bed_id
+            FROM location room
+            JOIN location ward ON ward.location_id = room.parent_location AND ward.retired = FALSE
+            JOIN location_tag_map room_tag_map ON room_tag_map.location_id = room.location_id
+            JOIN location_tag room_tag ON room_tag.location_tag_id = room_tag_map.location_tag_id
+                AND room_tag.name = 'Admission Location'
+            JOIN location_tag_map ward_tag_map ON ward_tag_map.location_id = ward.location_id
+            JOIN location_tag ward_tag ON ward_tag.location_tag_id = ward_tag_map.location_tag_id
+                AND ward_tag.name = 'Admission Location'
+            JOIN (
+                SELECT '01' AS suffix, 1 AS bed_row_number, 1 AS bed_column_number
+                UNION ALL
+                SELECT '02' AS suffix, 1 AS bed_row_number, 2 AS bed_column_number
+            ) slot ON 1 = 1
+            JOIN bed ON bed.bed_number = CONCAT(
+                CASE room.uuid
+                    WHEN '9212680d-bb7c-412a-bd07-d24358f5a4ad' THEN 'URG'
+                    WHEN '046a84ac-cd6a-4725-b712-24cb115d1c55' THEN 'GEN-H1'
+                    WHEN '6f9ad5d9-bcfe-45fb-82b1-c48bf6ae051f' THEN 'GEN-H2'
+                    WHEN 'df352801-7c6c-4dd5-bbef-0c01a216d453' THEN 'PED-H1'
+                    ELSE CONCAT('SALA-', LEFT(room.uuid, 8))
+                END,
+                '-',
+                slot.suffix
+            )
+                AND bed.voided = FALSE
+            WHERE room.retired = FALSE
+              AND NOT EXISTS (
+                  SELECT 1
+                  FROM bed_location_map existing_mapping
+                  WHERE existing_mapping.location_id = room.location_id
+                    AND existing_mapping.bed_id = bed.bed_id
+              );
+        ]]></sql>
+    </changeSet>
+</databaseChangeLog>

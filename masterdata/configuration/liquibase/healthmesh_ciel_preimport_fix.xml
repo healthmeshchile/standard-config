@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+                  http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+<changeSet id="healthmesh-create-concept-name-preferred-backup-table-20260609" author="HealthMesh">
+        <comment>Create backup table for concept_name preferred flags before CIEL re-import</comment>
+        <sql><![CDATA[
+            CREATE TABLE IF NOT EXISTS healthmesh_concept_name_preferred_backup (
+                backup_id INT AUTO_INCREMENT PRIMARY KEY,
+                concept_name_id INT NOT NULL,
+                concept_id INT NOT NULL,
+                name VARCHAR(255),
+                locale VARCHAR(50),
+                locale_preferred BOOLEAN,
+                concept_name_type VARCHAR(50),
+                voided BOOLEAN,
+                uuid CHAR(38),
+                backed_up_at DATETIME NOT NULL,
+                backup_reason VARCHAR(255),
+                UNIQUE KEY hm_cn_pref_backup_once (concept_name_id, backup_reason)
+            );
+        ]]></sql>
+    </changeSet>
+
+    <changeSet id="healthmesh-backup-current-preferred-concept-names-before-ciel-import-20260609" author="HealthMesh">
+        <comment>Backup current preferred concept names before normalizing locale_preferred flags</comment>
+        <sql><![CDATA[
+            INSERT IGNORE INTO healthmesh_concept_name_preferred_backup (
+                concept_name_id,
+                concept_id,
+                name,
+                locale,
+                locale_preferred,
+                concept_name_type,
+                voided,
+                uuid,
+                backed_up_at,
+                backup_reason
+            )
+            SELECT
+                cn.concept_name_id,
+                cn.concept_id,
+                cn.name,
+                cn.locale,
+                cn.locale_preferred,
+                cn.concept_name_type,
+                cn.voided,
+                cn.uuid,
+                NOW(),
+                'Before CIEL preferred-name preimport normalization 20260609'
+            FROM concept_name cn
+            WHERE cn.voided = FALSE
+              AND cn.locale_preferred = TRUE;
+        ]]></sql>
+    </changeSet>
+
+    <changeSet id="healthmesh-normalize-existing-duplicate-preferred-names-by-locale-20260609" author="HealthMesh">
+        <comment>Ensure no concept has more than one preferred name per locale before CIEL import</comment>
+        <sql><![CDATA[
+            UPDATE concept_name cn
+            JOIN (
+                SELECT
+                    concept_id,
+                    locale,
+                    MIN(concept_name_id) AS keep_concept_name_id
+                FROM concept_name
+                WHERE voided = FALSE
+                  AND locale_preferred = TRUE
+                GROUP BY concept_id, locale
+                HAVING COUNT(*) > 1
+            ) keepers
+              ON keepers.concept_id = cn.concept_id
+             AND keepers.locale = cn.locale
+            SET cn.locale_preferred = FALSE
+            WHERE cn.voided = FALSE
+              AND cn.locale_preferred = TRUE
+              AND cn.concept_name_id <> keepers.keep_concept_name_id;
+        ]]></sql>
+    </changeSet>
+
+
+
+    <changeSet id="healthmesh-clear-spanish-preferred-for-known-ciel-import-failures-20260609" author="HealthMesh">
+        <comment>
+            Clear existing Spanish preferred names for the CIEL concepts that have failed during OCL import
+            with: "Sólo un nombre preferido está permitido para cada configuración regional".
+            This is intentionally explicit and traceable from the import logs, including repeated and historical failures.
+        </comment>
+        <sql><![CDATA[
+            UPDATE concept_name cn
+            JOIN concept c ON c.concept_id = cn.concept_id
+            SET cn.locale_preferred = 0
+            WHERE c.uuid IN (
+                '162977AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+                '159589AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+                '157618AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+                '157615AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+                '157607AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+                '157634AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+                '1198AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+                '156225AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+                '111089AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+                '1034AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
+            )
+            AND cn.locale = 'es'
+            AND cn.voided = 0
+            AND cn.locale_preferred = 1;
+        ]]></sql>
+    </changeSet>
+
+    <changeSet id="healthmesh-clear-existing-spanish-preferred-for-ciel-concepts-before-ciel-import-20260609" author="HealthMesh">
+        <comment>
+            Clear existing Spanish preferred names for CIEL-style concepts before importing CIEL.
+            This lets the Spanish preferred name coming from CIEL/OCL become the canonical preferred name.
+        </comment>
+        <sql><![CDATA[
+            UPDATE concept_name cn
+            JOIN concept c ON c.concept_id = cn.concept_id
+            SET cn.locale_preferred = FALSE
+            WHERE c.uuid REGEXP '^[0-9]+A{20,}$'
+              AND cn.locale = 'es'
+              AND cn.voided = FALSE
+              AND cn.locale_preferred = TRUE;
+        ]]></sql>
+    </changeSet>
+
+    <changeSet id="healthmesh-assert-no-duplicate-preferred-names-before-ciel-import-20260609" author="HealthMesh">
+        <preConditions onFail="HALT">
+            <sqlCheck expectedResult="0"><![CDATA[
+                SELECT COUNT(*)
+                FROM (
+                    SELECT concept_id, locale
+                    FROM concept_name
+                    WHERE voided = FALSE
+                      AND locale_preferred = TRUE
+                    GROUP BY concept_id, locale
+                    HAVING COUNT(*) > 1
+                ) duplicated_preferred_names
+            ]]></sqlCheck>
+        </preConditions>
+        <comment>Stop startup if duplicate preferred names by locale remain before CIEL import</comment>
+        <sql><![CDATA[
+            SELECT 'OK: no duplicate preferred concept names by locale before CIEL import' AS healthmesh_ciel_preimport_check;
+        ]]></sql>
+    </changeSet>
+</databaseChangeLog>
