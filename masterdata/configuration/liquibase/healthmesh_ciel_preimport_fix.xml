@@ -53,29 +53,6 @@
         ]]></sql>
     </changeSet>
 
-    <changeSet id="healthmesh-normalize-existing-duplicate-preferred-names-by-locale-20260609" author="HealthMesh">
-        <comment>Ensure no concept has more than one preferred name per locale before CIEL import</comment>
-        <sql><![CDATA[
-            UPDATE concept_name cn
-            JOIN (
-                SELECT
-                    concept_id,
-                    locale,
-                    MIN(concept_name_id) AS keep_concept_name_id
-                FROM concept_name
-                WHERE voided = FALSE
-                  AND locale_preferred = TRUE
-                GROUP BY concept_id, locale
-                HAVING COUNT(*) > 1
-            ) keepers
-              ON keepers.concept_id = cn.concept_id
-             AND keepers.locale = cn.locale
-            SET cn.locale_preferred = FALSE
-            WHERE cn.voided = FALSE
-              AND cn.locale_preferred = TRUE
-              AND cn.concept_name_id <> keepers.keep_concept_name_id;
-        ]]></sql>
-    </changeSet>
 
 
 

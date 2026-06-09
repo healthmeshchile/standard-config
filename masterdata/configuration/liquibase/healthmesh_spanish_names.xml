@@ -74,41 +74,6 @@
         ]]></sql>
     </changeSet>
 
-    <changeSet id="healthmesh-add-observation-template-member-spanish-names-20260609" author="HealthMesh" runAlways="true">
-        <comment>Add Spanish names for observation template members used by Bahmni dashboards</comment>
-        <sql><![CDATA[
-            INSERT INTO concept_name (concept_id, name, locale, locale_preferred, creator, date_created, concept_name_type, voided, uuid)
-            SELECT c.concept_id, names.name, 'es', FALSE, 1, NOW(), names.concept_name_type, FALSE, UUID()
-            FROM concept c
-            JOIN (
-                SELECT '1114AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' AS concept_uuid, 'Vital signs' AS name, 'FULLY_SPECIFIED' AS concept_name_type
-                UNION ALL SELECT '1114AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA', 'Signos vitales', 'SHORT'
-                UNION ALL SELECT 'da47a35d-5806-48b7-b467-e29902759491', 'Chief Complaint Record', 'FULLY_SPECIFIED'
-                UNION ALL SELECT 'da47a35d-5806-48b7-b467-e29902759491', 'Motivo de consulta', 'SHORT'
-                UNION ALL SELECT '9bb0795c-4ff0-0305-1990-000000000046', 'Patient Instructions', 'FULLY_SPECIFIED'
-                UNION ALL SELECT '9bb0795c-4ff0-0305-1990-000000000046', 'Indicaciones para el paciente', 'SHORT'
-                UNION ALL SELECT '9bb0795c-4ff0-0305-1990-000000000047', 'Referral Entry', 'FULLY_SPECIFIED'
-                UNION ALL SELECT '9bb0795c-4ff0-0305-1990-000000000047', 'Derivación', 'SHORT'
-                UNION ALL SELECT '9bb0795c-4ff0-0305-1990-000000000006', 'Consultation Images', 'FULLY_SPECIFIED'
-                UNION ALL SELECT '9bb0795c-4ff0-0305-1990-000000000006', 'Imágenes de consulta', 'SHORT'
-                UNION ALL SELECT '9bb0795c-4ff0-0305-1990-000000000029', 'Consultation Videos', 'FULLY_SPECIFIED'
-                UNION ALL SELECT '9bb0795c-4ff0-0305-1990-000000000029', 'Videos de consulta', 'SHORT'
-            ) names ON names.concept_uuid = c.uuid
-            WHERE c.retired = FALSE
-              AND NOT EXISTS (
-                  SELECT 1
-                  FROM concept_name existing_name
-                  WHERE existing_name.concept_id = c.concept_id
-                    AND existing_name.name = names.name
-                    AND existing_name.locale = 'es'
-                    AND (
-                        existing_name.concept_name_type = names.concept_name_type
-                        OR (existing_name.concept_name_type IS NULL AND names.concept_name_type IS NULL)
-                    )
-                    AND existing_name.voided = FALSE
-              );
-        ]]></sql>
-    </changeSet>
 
     <changeSet id="healthmesh-add-existing-root-concept-spanish-names-20260609" author="HealthMesh" runAlways="true">
         <comment>Add Spanish names to root concepts that are provided by the base dictionary</comment>
