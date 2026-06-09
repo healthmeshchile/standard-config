@@ -22,7 +22,11 @@
     {
       "locale": "es",
       "labels": {},
-      "concepts": {},
+      "concepts": {
+        "MUSCULOSKELETAL_EXAMINATION_(TEXT)_1": "Examen musculoesquelético (texto)",
+        "RADIOGRAPHIC_EXAMINATION_3": "Examen radiográfico",
+        "RANGE_OF_MOTION_2": "Rango de movimiento"
+      },
       "formName": "Examen ortopédico",
       "formUuid": null,
       "version": "1",

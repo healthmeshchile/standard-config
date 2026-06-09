@@ -24,8 +24,33 @@
   "translations": [
     {
       "locale": "es",
-      "labels": {},
-      "concepts": {},
+      "labels": {
+        "LABEL_23": "Nota: guarde el formulario Signos vitales para registrar las observaciones.",
+        "LABEL_13": "Nota: guarde el formulario Signos vitales para registrar las observaciones."
+      },
+      "concepts": {
+        "BODY_POSITION_21_DESC": "Posición corporal durante el procedimiento o la medición de presión arterial.",
+        "ARTERIAL_BLOOD_OXYGEN_SATURATION_(PULSE_OXIMETER)_15_DESC": "Saturación de oxígeno medida con un oxímetro periférico.",
+        "DIASTOLIC_BLOOD_PRESSURE_20_DESC": "Medición de la presión arterial diastólica del paciente, realizada con manguito manual en posición sentada o de pie.",
+        "SYSTOLIC_BLOOD_PRESSURE_19": "Presión arterial sistólica",
+        "PULSE_14_DESC": "Frecuencia del pulso del paciente medida con un oxímetro periférico.",
+        "UNKNOWN_21": "Desconocido",
+        "TEMPERATURE_17": "Temperatura",
+        "FOWLER'S_POSITION_21": "Posición de Fowler",
+        "RECUMBENT_21": "Posición reclinada del cuerpo",
+        "BODY_POSITION_21": "Posición corporal",
+        "RESPIRATORY_RATE_16_DESC": "Frecuencia respiratoria medida en respiraciones por minuto.",
+        "SITTING_21": "Sentado",
+        "STANDING_21": "Posición corporal ortostática",
+        "DIASTOLIC_BLOOD_PRESSURE_20": "Presión diastólica",
+        "OTHER_21": "Otro no codificado",
+        "RESPIRATORY_RATE_16": "Frecuencia respiratoria",
+        "SYSTOLIC_BLOOD_PRESSURE_19_DESC": "Medición de la presión arterial sistólica del paciente, realizada con manguito manual en posición sentada o de pie.",
+        "PULSE_14": "Frecuencia cardíaca medida en arteria sistémica",
+        "BLOOD_PRESSURE_18": "Presión arterial",
+        "ARTERIAL_BLOOD_OXYGEN_SATURATION_(PULSE_OXIMETER)_15": "Saturación periférica de oxígeno",
+        "TEMPERATURE_17_DESC": "Temperatura del paciente en grados Fahrenheit."
+      },
       "formName": "Signos vitales",
       "formUuid": null,
       "version": "1",

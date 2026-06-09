@@ -47,8 +47,32 @@
   "translations": [
     {
       "locale": "es",
-      "labels": {},
-      "concepts": {},
+      "labels": {
+        "LABEL_13": "Nota: guarde el formulario Segundo control de signos vitales para registrar las observaciones."
+      },
+      "concepts": {
+        "SYSTOLIC_BLOOD_PRESSURE_20": "Presión arterial sistólica",
+        "ARTERIAL_BLOOD_OXYGEN_SATURATION_(PULSE_OXIMETER)_15_DESC": "Saturación de oxígeno medida con un oxímetro periférico.",
+        "SYSTOLIC_BLOOD_PRESSURE_20_DESC": "Medición de la presión arterial sistólica del paciente, realizada con manguito manual en posición sentada o de pie.",
+        "TEMPERATURE_18_DESC": "Temperatura del paciente en grados Fahrenheit.",
+        "PULSE_14_DESC": "Frecuencia del pulso del paciente medida con un oxímetro periférico.",
+        "FOWLER'S_POSITION_22": "Posición de Fowler",
+        "UNKNOWN_22": "Desconocido",
+        "RECUMBENT_22": "Posición reclinada del cuerpo",
+        "BODY_POSITION_22": "Posición corporal",
+        "TEMPERATURE_18": "Temperatura",
+        "DIASTOLIC_BLOOD_PRESSURE_21_DESC": "Medición de la presión arterial diastólica del paciente, realizada con manguito manual en posición sentada o de pie.",
+        "RESPIRATORY_RATE_16_DESC": "Frecuencia respiratoria medida en respiraciones por minuto.",
+        "STANDING_22": "Posición corporal ortostática",
+        "DIASTOLIC_BLOOD_PRESSURE_21": "Presión diastólica",
+        "SITTING_22": "Sentado",
+        "OTHER_22": "Otro no codificado",
+        "RESPIRATORY_RATE_16": "Frecuencia respiratoria",
+        "BODY_POSITION_22_DESC": "Posición corporal durante el procedimiento o la medición de presión arterial.",
+        "PULSE_14": "Frecuencia cardíaca medida en arteria sistémica",
+        "BLOOD_PRESSURE_19": "Presión arterial",
+        "ARTERIAL_BLOOD_OXYGEN_SATURATION_(PULSE_OXIMETER)_15": "Saturación periférica de oxígeno"
+      },
       "formName": "Segundo control de signos vitales",
       "formUuid": null,
       "version": "1",

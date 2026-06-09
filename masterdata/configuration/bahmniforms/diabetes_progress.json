@@ -21,7 +21,16 @@
     {
       "locale": "es",
       "labels": {},
-      "concepts": {},
+      "concepts": {
+        "DATE_OF_LAST_PATIENT_VISIT_1_DESC": "Fecha de la última visita registrada en el formulario de atención.",
+        "DIABETES,_LAST_HBA1C_DATE_2": "Fecha de última HbA1c",
+        "LAST_EYE_EXAM_DATE_5": "Fecha del último examen ocular",
+        "EYE_EXAMINATION_FINDINGS_(TEXT)_7": "Hallazgos del examen ocular (texto)",
+        "FOOT_EXAMINATION_4": "Examen de pies",
+        "EYE_EXAMINATION_FINDINGS_(TEXT)_7_DESC": "Registro en texto libre de los hallazgos del examen ocular. Para respuestas codificadas use 163309.",
+        "DIABETES,_LAST_KNOWN_A1C_RESULT_3": "Último resultado conocido de HbA1c",
+        "DATE_OF_LAST_PATIENT_VISIT_1": "Fecha de la última visita del paciente"
+      },
       "formName": "Seguimiento de diabetes",
       "formUuid": null,
       "version": "1",

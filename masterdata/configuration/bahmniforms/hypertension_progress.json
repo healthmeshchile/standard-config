@@ -21,7 +21,18 @@
     {
       "locale": "es",
       "labels": {},
-      "concepts": {},
+      "concepts": {
+        "SYSTOLIC_BLOOD_PRESSURE_2": "Presión arterial sistólica",
+        "SYSTOLIC_BLOOD_PRESSURE_2_DESC": "Medición de la presión arterial sistólica del paciente, realizada con manguito manual en posición sentada o de pie.",
+        "LOW-DENSITY_LIPOPROTEIN_CHOLESTEROL_(MMOL/L)_7": "Medición del colesterol de las lipoproteínas de baja densidad",
+        "SERUM_CREATININE_(MG/DL)_5_DESC": "Prueba de laboratorio que determina la creatinina sérica. Suele utilizarse junto con BUN para evaluar la función renal. Unidades: mg/dL. Para umol/L, use CIEL:790.",
+        "LAST_LDL_DATE_6": "Fecha de último LDL",
+        "DIASTOLIC_BLOOD_PRESSURE_3_DESC": "Medición de la presión arterial diastólica del paciente, realizada con manguito manual en posición sentada o de pie.",
+        "DIASTOLIC_BLOOD_PRESSURE_3": "Presión diastólica",
+        "SERUM_CREATININE_(MG/DL)_5": "Creatinina (mg/dL)",
+        "LAST_SERUM_CREATININE_DATE_4": "Fecha de última creatinina sérica",
+        "LOW-DENSITY_LIPOPROTEIN_CHOLESTEROL_(MMOL/L)_7_DESC": "La prueba de colesterol LDL se utiliza junto con otros exámenes lipídicos para determinar el riesgo de enfermedad cardíaca."
+      },
       "formName": "Seguimiento de hipertensión",
       "formUuid": null,
       "version": "1",

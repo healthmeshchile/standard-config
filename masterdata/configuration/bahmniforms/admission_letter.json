@@ -21,8 +21,14 @@
   "translations": [
     {
       "locale": "es",
-      "labels": {},
-      "concepts": {},
+      "labels": {
+        "LABEL_4": "Nota: vaya a la sección de impresión del panel del paciente para imprimir los certificados."
+      },
+      "concepts": {
+        "REFERRING_TO_HOSPITAL_1": "Hospital de referencia",
+        "COMMENTS_5": "Comentarios",
+        "REFERRED_TO_DOCTOR_9": "Profesional de destino"
+      },
       "formName": "Carta de admisión",
       "formUuid": null,
       "version": "1",

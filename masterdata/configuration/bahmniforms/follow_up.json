@@ -21,7 +21,11 @@
     {
       "locale": "es",
       "labels": {},
-      "concepts": {},
+      "concepts": {
+        "REASON_FOR_VISIT_2": "Motivo del encuentro",
+        "RETURN_VISIT_DATE_1_DESC": "El paciente debe regresar en esta fecha.",
+        "RETURN_VISIT_DATE_1": "Fecha de visita de regreso"
+      },
       "formName": "Seguimiento",
       "formUuid": null,
       "version": "1",
