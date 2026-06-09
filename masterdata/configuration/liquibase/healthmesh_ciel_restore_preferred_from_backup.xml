@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+
+    <changeSet id="healthmesh-restore-ciel-preferred-from-backup-20260609-02" author="HealthMesh" dbms="mysql">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1"><![CDATA[
+                SELECT IF(COUNT(*) > 0, 1, 0)
+                FROM information_schema.tables
+                WHERE table_schema = DATABASE()
+                  AND table_name = 'healthmesh_ciel_preferred_backup'
+            ]]></sqlCheck>
+        </preConditions>
+        <comment>
+            Emergency restore of CIEL preferred flags from backup, only if the CIEL import failed
+            after preferred flags were cleared. Do not include this file in normal startup.
+        </comment>
+        <sql><![CDATA[
+            UPDATE concept_name cn
+            JOIN healthmesh_ciel_preferred_backup b
+              ON b.concept_name_id = cn.concept_name_id
+            SET cn.locale_preferred = b.locale_preferred
+            WHERE b.backup_reason = 'Before clearing all existing CIEL preferred flags for OCL import 20260609-02';
+        ]]></sql>
+    </changeSet>
+
+</databaseChangeLog>

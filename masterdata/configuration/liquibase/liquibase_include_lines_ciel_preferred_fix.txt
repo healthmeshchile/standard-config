@@ -1,0 +1,5 @@
+<!-- CIEL pre-import fix: run BEFORE importing CIEL through OCL on a non-fresh Bahmni/OpenMRS DB -->
+<include file="healthmesh_ciel_clear_all_preferred_before_ocl_import.xml" relativeToChangelogFile="true"/>
+
+<!-- Optional/emergency only: do NOT include in normal startup. Use only if CIEL import fails after clearing preferred flags. -->
+<!-- <include file="healthmesh_ciel_restore_preferred_from_backup.xml" relativeToChangelogFile="true"/> -->

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+
+    <changeSet id="healthmesh-create-ciel-preferred-backup-table-20260609-02" author="HealthMesh" dbms="mysql">
+        <comment>
+            Create backup table for preferred flags from existing CIEL concept names before OCL/CIEL import.
+            This table is used only to allow rollback/recovery if the import fails after clearing preferred flags.
+        </comment>
+        <sql><![CDATA[
+            CREATE TABLE IF NOT EXISTS healthmesh_ciel_preferred_backup (
+                backup_id INT AUTO_INCREMENT PRIMARY KEY,
+                concept_name_id INT NOT NULL,
+                concept_id INT NOT NULL,
+                concept_uuid CHAR(38) NOT NULL,
+                concept_name_uuid CHAR(38),
+                name VARCHAR(255),
+                locale VARCHAR(50),
+                locale_preferred BOOLEAN,
+                concept_name_type VARCHAR(50),
+                voided BOOLEAN,
+                backed_up_at DATETIME NOT NULL,
+                backup_reason VARCHAR(255) NOT NULL,
+                UNIQUE KEY hm_ciel_pref_backup_once (concept_name_id, backup_reason)
+            );
+        ]]></sql>
+    </changeSet>
+
+    <changeSet id="healthmesh-backup-existing-ciel-preferred-before-ocl-import-20260609-02" author="HealthMesh" dbms="mysql">
+        <comment>
+            Backup all currently preferred names for existing CIEL-style concepts before clearing locale_preferred.
+            CIEL-style concepts are identified by UUID pattern: numeric id followed by many A characters.
+        </comment>
+        <sql><![CDATA[
+            INSERT IGNORE INTO healthmesh_ciel_preferred_backup (
+                concept_name_id,
+                concept_id,
+                concept_uuid,
+                concept_name_uuid,
+                name,
+                locale,
+                locale_preferred,
+                concept_name_type,
+                voided,
+                backed_up_at,
+                backup_reason
+            )
+            SELECT
+                cn.concept_name_id,
+                cn.concept_id,
+                c.uuid AS concept_uuid,
+                cn.uuid AS concept_name_uuid,
+                cn.name,
+                cn.locale,
+                cn.locale_preferred,
+                cn.concept_name_type,
+                cn.voided,
+                NOW(),
+                'Before clearing all existing CIEL preferred flags for OCL import 20260609-02'
+            FROM concept_name cn
+            JOIN concept c ON c.concept_id = cn.concept_id
+            WHERE c.uuid REGEXP '^[0-9]+A{20,}$'
+              AND cn.locale_preferred = TRUE;
+        ]]></sql>
+    </changeSet>
+
+    <changeSet id="healthmesh-clear-all-existing-ciel-preferred-before-ocl-import-20260609-02" author="HealthMesh" dbms="mysql">
+        <comment>
+            Clear all preferred flags from existing CIEL concept names before importing CIEL through OCL.
+            This avoids ConceptValidator failures caused by the importer merging an existing preferred name
+            with an incoming preferred name for the same locale.
+        </comment>
+        <sql><![CDATA[
+            UPDATE concept_name cn
+            JOIN concept c ON c.concept_id = cn.concept_id
+            SET cn.locale_preferred = FALSE
+            WHERE c.uuid REGEXP '^[0-9]+A{20,}$'
+              AND cn.locale_preferred = TRUE;
+        ]]></sql>
+        <rollback><![CDATA[
+            UPDATE concept_name cn
+            JOIN healthmesh_ciel_preferred_backup b
+              ON b.concept_name_id = cn.concept_name_id
+            SET cn.locale_preferred = b.locale_preferred
+            WHERE b.backup_reason = 'Before clearing all existing CIEL preferred flags for OCL import 20260609-02';
+        ]]></rollback>
+    </changeSet>
+
+    <changeSet id="healthmesh-assert-no-existing-ciel-preferred-before-ocl-import-20260609-02" author="HealthMesh" dbms="mysql">
+        <preConditions onFail="HALT">
+            <sqlCheck expectedResult="0"><![CDATA[
+                SELECT COUNT(*)
+                FROM concept_name cn
+                JOIN concept c ON c.concept_id = cn.concept_id
+                WHERE c.uuid REGEXP '^[0-9]+A{20,}$'
+                  AND cn.locale_preferred = TRUE
+            ]]></sqlCheck>
+        </preConditions>
+        <comment>
+            Stop startup if any existing CIEL concept name remains preferred before OCL/CIEL import.
+        </comment>
+        <sql><![CDATA[
+            SELECT 'OK: no existing CIEL preferred concept names remain before OCL import' AS healthmesh_ciel_preimport_check;
+        ]]></sql>
+    </changeSet>
+
+</databaseChangeLog>
