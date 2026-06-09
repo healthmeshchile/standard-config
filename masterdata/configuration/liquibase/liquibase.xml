@@ -356,7 +356,6 @@
 
     <!-- HealthMesh custom changes - keep standard Liquibase unchanged and include local extensions by function -->
     <include file="healthmesh_ciel_preimport_fix.xml" relativeToChangelogFile="true"/>
-    <include file="healthmesh_emrapi_cleanup.xml" relativeToChangelogFile="true"/>
     <include file="healthmesh_fhir_sources.xml" relativeToChangelogFile="true"/>
     <include file="healthmesh_admission_beds.xml" relativeToChangelogFile="true"/>
     <include file="healthmesh_spanish_names.xml" relativeToChangelogFile="true"/>
