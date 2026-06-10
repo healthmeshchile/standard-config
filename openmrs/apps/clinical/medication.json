@@ -6,7 +6,7 @@
         "calculateDoseOnlyOnCurrentVisitValues": false
       },
       "inputOptionsConfig": {
-        "defaultDurationUnit": "Días",
+        "defaultDurationUnit": "Dias",
         "hideOrderSet": false,
         "defaultInstructions": "Según indicación",
         "doseUnits": [
@@ -24,7 +24,7 @@
         ],
         "durationUnitsFactors": [
           {
-            "name": "Días",
+            "name": "Dias",
             "factor": 1
           },
           {
@@ -40,7 +40,7 @@
           {
             "minFrequency": "1/7",
             "maxFrequency": 5,
-            "defaultDurationUnit": "Días"
+            "defaultDurationUnit": "Dias"
           },
           {
             "minFrequency": "1/30",
