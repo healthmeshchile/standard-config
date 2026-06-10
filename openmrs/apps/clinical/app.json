@@ -38,7 +38,7 @@
         },
         "showTextAsAbnormal": false,
         "quickPrints":false,
-        "allowAdhocTeleConsultation": false,
+        "allowAdhocTeleConsultation": true,
         "teleConsultationDomain": "meet.jit.si",
         "networkConnectivity" : {
             "showNetworkStatusMessage": false,
@@ -93,7 +93,7 @@
             "Radiology": "Radiology Order",
             "Endoscopy": "Endoscopy Order"
         },
-        "allowConsultationWhenNoOpenVisit": false,
+        "allowConsultationWhenNoOpenVisit": true,
         "defaultVisitType": "OPD",
         "visitTypeForRetrospectiveEntries": "Special OPD",
         "maxConceptSetLevels": 3,
