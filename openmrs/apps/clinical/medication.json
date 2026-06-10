@@ -55,7 +55,7 @@
         ],
         "drugFormDefaults": {
           "Ayurvedic": {
-            "doseUnits": "Cucharadita",
+            "doseUnits": "Cucharadita de té",
             "route": "Oral"
           },
 
