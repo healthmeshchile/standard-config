@@ -1,0 +1,23 @@
+<config>
+  <globalProperties>
+
+    <globalProperty>
+      <property>order.drugDosingUnitsConceptUuid</property>
+      <value>d45d6060-5e07-11ef-8f7c-0242ac120002</value>
+      <description>Concept set containing allowed drug dosing units</description>
+    </globalProperty>
+
+    <globalProperty>
+      <property>order.drugDispensingUnitsConceptUuid</property>
+      <value>d45d6060-5e07-11ef-8f7c-0242ac120002</value>
+      <description>Concept set containing allowed drug dispensing quantity units</description>
+    </globalProperty>
+
+    <globalProperty>
+      <property>order.durationUnitsConceptUuid</property>
+      <value>1732AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</value>
+      <description>Concept set containing allowed duration units</description>
+    </globalProperty>
+
+  </globalProperties>
+</config>
