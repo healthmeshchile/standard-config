@@ -178,109 +178,52 @@ angular.module('bahmni.common.displaycontrol.custom')
         };
 
         var transformDate = function (dateTimeArray) {
-            if (!dateTimeArray || !angular.isArray(dateTimeArray)) {
-                return "";
-            }
-
             var dateTime = dateTimeArray.slice();
+            dateTime[1] = dateTime[1] - 1
+            return Bahmni.Common.Util.DateUtil.formatDateWithoutTimeToLocal(dateTime)
+        }
 
-            if (dateTime.length > 1 && typeof dateTime[1] === "number") {
-                dateTime[1] = dateTime[1] - 1;
-            }
-
-            return Bahmni.Common.Util.DateUtil.formatDateWithoutTimeToLocal(dateTime);
-        };
-
-        var transformTime = function (dateTimeArray) {
-            if (!dateTimeArray || !angular.isArray(dateTimeArray)) {
-                return "";
-            }
-
-            var dateTime = dateTimeArray.slice();
-
-            if (dateTime.length > 1 && typeof dateTime[1] === "number") {
-                dateTime[1] = dateTime[1] - 1;
-            }
-
+        var transformTime = function (dateTime) {
             return Bahmni.Common.Util.DateUtil.formatTimeToLocal(dateTime);
-        };
+        }
 
-        var getAppointmentDateAndSlot = function (appointment) {
-            var startDateTime = appointment.DASHBOARD_APPOINTMENTS_START_DATE_IN_UTC_KEY ||
-                appointment.DASHBOARD_APPOINTMENTS_START_DATE_KEY;
-
-            var endDateTime = appointment.DASHBOARD_APPOINTMENTS_END_DATE_IN_UTC_KEY ||
-                appointment.DASHBOARD_APPOINTMENTS_END_DATE_KEY;
-
-            var appointmentDate = appointment.DASHBOARD_APPOINTMENTS_DATE_KEY || transformDate(startDateTime);
-
-            var timeSlot = appointment.DASHBOARD_APPOINTMENTS_SLOT_KEY;
-
-            if (!timeSlot) {
-                var startTime = transformTime(startDateTime);
-                var endTime = transformTime(endDateTime);
-
-                if (startTime && endTime) {
-                    timeSlot = startTime + " - " + endTime;
-                } else if (startTime) {
-                    timeSlot = startTime;
-                } else {
-                    timeSlot = "";
-                }
-            }
-
-            return [appointmentDate, timeSlot];
-        };
+        var getAppointmentDateAndSlot = function (startTimeInMillseconds, endTimeInMillseconds) {
+            let appointmentStartDate = transformDate(startTimeInMillseconds);
+            let timeSlot = transformTime(startTimeInMillseconds) + " - " + transformTime(endTimeInMillseconds) ;
+            return [appointmentStartDate, timeSlot];
+        }
 
         $q.all([getUpcomingAppointments(), getPastAppointments()]).then(function (response) {
-            $scope.upcomingAppointments = response[0].data || [];
+            $scope.upcomingAppointments = response[0].data;
             $scope.upcomingAppointmentsUUIDs = [];
             $scope.teleconsultationAppointments = [];
             $scope.upcomingAppointmentsLinks = [];
-
-            for (var i = 0; i < $scope.upcomingAppointments.length; i++) {
-                var upcomingAppointment = $scope.upcomingAppointments[i];
-
-                $scope.upcomingAppointmentsUUIDs[i] = upcomingAppointment.uuid;
-                $scope.teleconsultationAppointments[i] = 'Virtual' === upcomingAppointment.DASHBOARD_APPOINTMENTS_KIND;
-                $scope.upcomingAppointmentsLinks[i] = upcomingAppointment.tele_health_video_link || "";
-
-                var upcomingDateAndSlot = getAppointmentDateAndSlot(upcomingAppointment);
-
-                upcomingAppointment.DASHBOARD_APPOINTMENTS_DATE_KEY = upcomingDateAndSlot[0];
-                upcomingAppointment.DASHBOARD_APPOINTMENTS_SLOT_KEY = upcomingDateAndSlot[1];
-
-                delete upcomingAppointment.uuid;
-                delete upcomingAppointment.DASHBOARD_APPOINTMENTS_START_DATE_IN_UTC_KEY;
-                delete upcomingAppointment.DASHBOARD_APPOINTMENTS_END_DATE_IN_UTC_KEY;
-                delete upcomingAppointment.DASHBOARD_APPOINTMENTS_START_DATE_KEY;
-                delete upcomingAppointment.DASHBOARD_APPOINTMENTS_END_DATE_KEY;
-                delete upcomingAppointment.DASHBOARD_APPOINTMENTS_KIND;
-                delete upcomingAppointment.tele_health_video_link;
+            for (var i=0; i<$scope.upcomingAppointments.length; i++) {
+                $scope.upcomingAppointmentsUUIDs[i] = $scope.upcomingAppointments[i].uuid;
+                $scope.teleconsultationAppointments[i] = 'Virtual' === $scope.upcomingAppointments[i].DASHBOARD_APPOINTMENTS_KIND;
+                delete $scope.upcomingAppointments[i].uuid;
+                const [date, timeSlot] = getAppointmentDateAndSlot($scope.upcomingAppointments[i].DASHBOARD_APPOINTMENTS_START_DATE_IN_UTC_KEY, $scope.upcomingAppointments[i].DASHBOARD_APPOINTMENTS_END_DATE_IN_UTC_KEY);
+                delete $scope.upcomingAppointments[i].DASHBOARD_APPOINTMENTS_START_DATE_IN_UTC_KEY;
+                delete $scope.upcomingAppointments[i].DASHBOARD_APPOINTMENTS_END_DATE_IN_UTC_KEY;
+                delete $scope.upcomingAppointments[i].DASHBOARD_APPOINTMENTS_START_DATE_KEY;
+                delete $scope.upcomingAppointments[i].DASHBOARD_APPOINTMENTS_END_DATE_KEY;
+                $scope.upcomingAppointments[i].DASHBOARD_APPOINTMENTS_DATE_KEY = date;
+                $scope.upcomingAppointments[i].DASHBOARD_APPOINTMENTS_SLOT_KEY = timeSlot;
+                $scope.upcomingAppointmentsLinks[i] = $scope.upcomingAppointments[i].tele_health_video_link || "";
+                delete $scope.upcomingAppointments[i].DASHBOARD_APPOINTMENTS_KIND;
+                delete $scope.upcomingAppointments[i].tele_health_video_link;
             }
-
-            $scope.upcomingAppointmentsHeadings = $scope.upcomingAppointments.length > 0 ? _.keys($scope.upcomingAppointments[0]) : [];
-
-            $scope.pastAppointments = response[1].data || [];
-
-            for (var j = 0; j < $scope.pastAppointments.length; j++) {
-                var pastAppointment = $scope.pastAppointments[j];
-
-                var pastDateAndSlot = getAppointmentDateAndSlot(pastAppointment);
-
-                pastAppointment.DASHBOARD_APPOINTMENTS_DATE_KEY = pastDateAndSlot[0];
-                pastAppointment.DASHBOARD_APPOINTMENTS_SLOT_KEY = pastDateAndSlot[1];
-
-                delete pastAppointment.DASHBOARD_APPOINTMENTS_START_DATE_IN_UTC_KEY;
-                delete pastAppointment.DASHBOARD_APPOINTMENTS_END_DATE_IN_UTC_KEY;
-                delete pastAppointment.DASHBOARD_APPOINTMENTS_START_DATE_KEY;
-                delete pastAppointment.DASHBOARD_APPOINTMENTS_END_DATE_KEY;
+            $scope.upcomingAppointmentsHeadings = _.keys($scope.upcomingAppointments[0]);
+            $scope.pastAppointments = response[1].data;
+            for (let i = 0; i < $scope.pastAppointments.length; i++) {
+                const [date, timeSlot] = getAppointmentDateAndSlot($scope.pastAppointments[i].DASHBOARD_APPOINTMENTS_START_DATE_IN_UTC_KEY, $scope.pastAppointments[i].DASHBOARD_APPOINTMENTS_END_DATE_IN_UTC_KEY);
+                delete $scope.pastAppointments[i].DASHBOARD_APPOINTMENTS_START_DATE_IN_UTC_KEY;
+                delete $scope.pastAppointments[i].DASHBOARD_APPOINTMENTS_END_DATE_IN_UTC_KEY;
+                $scope.pastAppointments[i].DASHBOARD_APPOINTMENTS_DATE_KEY = date;
+                $scope.pastAppointments[i].DASHBOARD_APPOINTMENTS_SLOT_KEY = timeSlot;
             }
-
-            $scope.pastAppointmentsHeadings = $scope.pastAppointments.length > 0 ? _.keys($scope.pastAppointments[0]) : [];
+            $scope.pastAppointmentsHeadings = _.keys($scope.pastAppointments[0]);
         });
-
-
 
         $scope.goToListView = function () {
             $window.open('/appointments/#/home/manage/appointments/list');
