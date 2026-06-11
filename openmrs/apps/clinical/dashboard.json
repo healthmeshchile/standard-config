@@ -212,7 +212,7 @@
             },
             "flowsheet": {
                 "type": "flowSheet",
-                "title": "Vitals Flow Sheet",
+                "title": "Hoja de signos vitales",
                 "displayOrder": 12,
                 "dashboardConfig": {
                     "latestCount": "5",
