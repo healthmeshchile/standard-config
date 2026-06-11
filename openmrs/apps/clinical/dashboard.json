@@ -349,7 +349,7 @@
                 "translationKey": "DASHBOARD_TITLE_GROWTH_CHART",
                 "config":{  
                     "yAxisConcepts":[  
-                        "Weight (kg)"
+                        "peso (kg)"
                     ],
                     "referenceData":"growthChartReference.csv",
                     "numberOfVisits":20
@@ -374,7 +374,7 @@
                 "translationKey": "DASHBOARD_TITLE_WEIGHT_BMI",
                 "config":{  
                     "yAxisConcepts":[  
-                        "Weight (kg)",
+                        "peso (kg)",
                         "BMI"
                     ],
                     "xAxisConcept":"observationDateTime",
