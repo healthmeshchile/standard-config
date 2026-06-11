@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+
+    <changeSet id="healthmesh-clean-emrapi-duplicate-disposition-mappings-20260610" author="HealthMesh" runAlways="true">
+        <comment>
+            Remove duplicate EMR API mappings introduced by CIEL/OCL import.
+            Bahmni/EMR API expects these mappings to resolve to one active concept.
+        </comment>
+
+        <sql><![CDATA[
+            DELETE crm
+            FROM concept_reference_map crm
+            JOIN concept c
+                ON c.concept_id = crm.concept_id
+            JOIN concept_reference_term crt
+                ON crt.concept_reference_term_id = crm.concept_reference_term_id
+            JOIN concept_reference_source crs
+                ON crs.concept_source_id = crt.concept_source_id
+            WHERE crs.name = 'org.openmrs.module.emrapi'
+              AND c.uuid IN (
+                  '9ceedfb7-60e4-42ce-a11e-f2dbabc82112',
+                  'ce085d74-323c-4c9a-9fdf-051de81dd020'
+              )
+              AND crt.code IN (
+                  'Disposition Concept Set',
+                  'Disposition'
+              );
+        ]]></sql>
+    </changeSet>
+
+</databaseChangeLog>
