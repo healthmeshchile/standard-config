@@ -96,15 +96,6 @@
                 "showDetailsButton":true,
                 "displayOrder":6
             },
-            "allOrdersDashboard": {
-            "title": "Órdenes del Paciente",
-            "name": "allOrders",
-            "type": "allOrdersReact",
-            "displayOrder": 25,
-            "isObservation": false,
-            "hideEmptyDisplayControl": false,
-            "translationKey": "DASHBOARD_TITLE_ALL_ORDERS_KEY"
-            },
             "programs":{  
                 "translationKey":"DASHBOARD_TITLE_PROGRAMS_KEY",
                 "type":"programs",
@@ -323,6 +314,22 @@
                     "conceptNames":[],
                     "showDetailsButton":true
                 }
+            }
+        }
+    },
+    "orders": {
+        "translationKey": "DASHBOARD_TAB_ORDERS_KEY",
+        "maxRecentlyViewedPatients": 10,
+        "sections": {
+            "allOrdersDashboard": {
+                "title": "Órdenes del Paciente",
+                "name": "allOrders",
+                "type": "allOrdersReact",
+                "displayOrder": 0,
+                "displayType": "Full-Page",
+                "isObservation": false,
+                "hideEmptyDisplayControl": false,
+                "translationKey": "DASHBOARD_TITLE_ALL_ORDERS_KEY"
             }
         }
     },
